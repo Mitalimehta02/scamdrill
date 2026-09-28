@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ScamDrill PRD</title>
+<style>
+:root{--bg:#f6f5f1;--surface:#fff;--ink:#16202e;--muted:#5d6878;--line:#dfe2e6;--navy:#1b2a41;--amber:#b86e00;--amber-soft:#fff3dc;--ok:#1f7a4d;--ok-soft:#e4f3ea;--red:#c0392b;--red-soft:#fbe7e5;--chip:#eef0f3}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f141c;--surface:#18202b;--ink:#eef1f5;--muted:#a1abb9;--line:#2b3544;--navy:#2c3f5c;--amber:#f0a93a;--amber-soft:#3a2c12;--ok:#5cc48d;--ok-soft:#153025;--red:#ef6b5e;--red-soft:#3a1b18;--chip:#222c39}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Noto Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+.strip{position:sticky;top:0;background:var(--amber);color:#fff;text-align:center;font-size:13px;font-weight:700;padding:6px 16px;z-index:3}
+main{max-width:900px;margin:0 auto;padding:32px 16px 64px}
+h1{font-size:2.1rem;margin:0}
+.lede{color:var(--muted);margin:4px 0 8px;font-size:1.05rem}
+.status{display:inline-block;background:var(--amber-soft);color:var(--amber);font-size:12px;font-weight:700;padding:2px 10px;border-radius:99px}
+h2{font-size:1.15rem;margin:40px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin:12px 0}
+.expand{border-left:4px solid var(--amber)}
+svg{width:100%;height:auto;display:block}
+svg text{font-family:system-ui,sans-serif;fill:var(--ink)}
+.b{fill:var(--surface);stroke:var(--line);stroke-width:1.5}.bn{fill:var(--chip);stroke:var(--muted);stroke-width:1.5}
+.bo{fill:var(--ok-soft);stroke:var(--ok);stroke-width:1.5}.br{fill:var(--red-soft);stroke:var(--red);stroke-width:1.5}.ba{fill:var(--amber-soft);stroke:var(--amber);stroke-width:1.5}
+.ar{stroke:var(--muted);stroke-width:1.5;fill:none;marker-end:url(#ah)}
+.sm{font-size:11px;fill:var(--muted)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tabs button{font:inherit;font-size:14px;padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+.screen{display:grid;grid-template-columns:230px 1fr;gap:20px;align-items:start}
+@media (max-width:640px){.screen{grid-template-columns:1fr}}
+.phone{border:2px solid var(--line);border-radius:26px;padding:10px;background:var(--bg);min-height:380px;font-size:12px}
+.phone .ps{background:var(--amber);color:#fff;font-size:10px;font-weight:700;text-align:center;border-radius:6px;padding:2px}
+.phone .ph{background:var(--navy);color:#fff;border-radius:8px;padding:6px 8px;margin-top:6px;font-weight:700}
+.phone .m{height:5px;background:var(--chip);border-radius:9px;margin:5px 0}.phone .m i{display:block;height:100%;width:55%;background:var(--amber);border-radius:9px}
+.bub{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:5px 7px;margin:6px 30px 2px 0}
+.me{background:var(--navy);color:#fff;border-radius:10px;padding:5px 7px;margin:6px 0 2px 40px}
+.chipx{display:inline-block;background:var(--amber-soft);color:var(--amber);font-size:9px;font-weight:700;border-radius:6px;padding:1px 5px}
+.btns{display:flex;gap:6px;margin-top:10px}.btns span{flex:1;text-align:center;color:#fff;border-radius:8px;padding:7px 0;font-weight:700}
+.fld{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:5px 7px;margin:5px 0;color:var(--muted)}
+.big{background:var(--navy);color:#fff;text-align:center;border-radius:10px;padding:9px;font-weight:700;margin-top:10px}
+.crit{list-style:none;padding:0;margin:8px 0 0}.crit li{padding-left:24px;position:relative;margin:4px 0}.crit li:before{content:"☐";position:absolute;left:0;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:600}
+.stagebar{display:flex;gap:3px;margin:10px 0}.stagebar span{flex:1;height:26px;border-radius:5px;background:var(--chip);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--muted)}
+.stagebar .otp,.stagebar .pay{background:var(--amber-soft);color:var(--amber)}
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin:10px 0;padding:0 20px}
+summary{cursor:pointer;padding:14px 0;font-weight:700}
+details>div,details>ul,details>table{margin-bottom:16px}
+.q{border-left:4px solid var(--red)}
+.pill{font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--chip);color:var(--muted);margin-left:6px}
+</style>
+</head>
+<body>
+<div class="strip">Planning companion: prd.md is the source of truth</div>
+<main>
+<h1>ScamDrill: product requirements</h1>
+<p class="lede">What someone sees, does and gets back, screen by screen.</p>
+<span class="status" style="background:var(--ok-soft);color:var(--ok)">PRD APPROVED</span>
+
+<div class="card expand">
+<strong>From scope to product.</strong> Scope said "the drill ends with win or lose". Now we know exactly what that means: four endings triggered by code, a teaching screen for the parent first, then a report card for the child with a fixed tip. Scope said "no real data". Now there's a guard in the browser that blocks real-looking numbers before they reach the AI.
+</div>
+
+<h2>The core journey</h2>
+<div class="card">
+<svg viewBox="0 0 820 250" role="img" aria-label="Journey: Setup, Handoff, Drill, four endings, parent ending screen, report card, run again">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--muted)"/></marker></defs>
+<rect class="b" x="5" y="30" width="110" height="56" rx="9"/><text x="60" y="55" text-anchor="middle" font-weight="700">Setup</text><text x="60" y="73" text-anchor="middle" class="sm">child</text>
+<rect class="b" x="140" y="30" width="110" height="56" rx="9"/><text x="195" y="55" text-anchor="middle" font-weight="700">Handoff</text><text x="195" y="73" text-anchor="middle" class="sm">parent</text>
+<rect class="bn" x="275" y="20" width="150" height="76" rx="9"/><text x="350" y="50" text-anchor="middle" font-weight="700">Drill</text><text x="350" y="68" text-anchor="middle" class="sm">10 stages · 1 per reply</text><text x="350" y="83" text-anchor="middle" class="sm">OTP @5 · Pay @7</text>
+<path class="ar" d="M115 58H136"/><path class="ar" d="M250 58H271"/>
+<rect class="bo" x="470" y="0" width="160" height="34" rx="7"/><text x="550" y="22" text-anchor="middle" font-size="12">WIN · Hang up / Call</text>
+<rect class="br" x="470" y="40" width="160" height="34" rx="7"/><text x="550" y="62" text-anchor="middle" font-size="12">LOSS · OTP / number</text>
+<rect class="br" x="470" y="80" width="160" height="34" rx="7"/><text x="550" y="102" text-anchor="middle" font-size="12">LOSS · tapped Pay</text>
+<rect class="ba" x="470" y="120" width="160" height="34" rx="7"/><text x="550" y="142" text-anchor="middle" font-size="12">PARTIAL · stage 10</text>
+<path class="ar" d="M425 45C448 45 448 17 466 17"/><path class="ar" d="M425 57H466"/><path class="ar" d="M425 70C448 70 448 97 466 97"/><path class="ar" d="M425 85C445 85 445 137 466 137"/>
+<rect class="b" x="660" y="50" width="150" height="56" rx="9"/><text x="735" y="75" text-anchor="middle" font-weight="700">Ending screen</text><text x="735" y="93" text-anchor="middle" class="sm">parent · kind, teaching</text>
+<path class="ar" d="M630 17C650 17 650 70 656 70"/><path class="ar" d="M630 57H656"/><path class="ar" d="M630 97C648 97 648 86 656 86"/><path class="ar" d="M630 137C652 137 652 95 656 95"/>
+<rect class="b" x="560" y="186" width="170" height="56" rx="9"/><text x="645" y="211" text-anchor="middle" font-weight="700">Report card</text><text x="645" y="229" text-anchor="middle" class="sm">"Hand back to [child]"</text>
+<path class="ar" d="M735 106C735 150 700 160 690 182"/>
+<path class="ar" d="M560 214H90C60 214 60 150 60 90" stroke-dasharray="4 4"/><text x="250" y="206" class="sm">Run another drill (details kept)</text>
+</svg>
+</div>
+
+<h2>Screens: tap through</h2>
+<div class="card">
+<div class="tabs" role="tablist" id="tabs"></div>
+<div id="panel"></div>
+</div>
+
+<h2>The drill script</h2>
+<div class="card">
+<div class="stagebar"><span>1</span><span>2</span><span>3</span><span>4</span><span class="otp">5 OTP</span><span>6</span><span class="pay">7 PAY</span><span>8</span><span>9</span><span>10</span></div>
+<table>
+<tr><th>Stage</th><th>Beat</th><th>Planned tactic</th></tr>
+<tr><td>1</td><td>Intro: "Inspector Sharma, CBI Cyber Cell"</td><td>AUTHORITY</td></tr>
+<tr><td>2</td><td>Aadhaar linked to a laundering case at [bank]</td><td>AUTHORITY / FEAR</td></tr>
+<tr><td>3</td><td>Arrest warrant, act now</td><td>URGENCY</td></tr>
+<tr><td>4</td><td>"Don't tell anyone, stay on this call"</td><td>SECRECY / ISOLATION</td></tr>
+<tr><td>5</td><td><strong>Fake OTP SMS slides in</strong>; scammer demands it</td><td>OTP</td></tr>
+<tr><td>6</td><td>[Grandchild] could be affected</td><td>FEAR / URGENCY</td></tr>
+<tr><td>7</td><td><strong>Pay card</strong>: "Transfer to RBI safe account"</td><td>PAYMENT</td></tr>
+<tr><td>8–10</td><td>Escalation → Partial if still on the line</td><td>as tagged</td></tr>
+</table>
+<p style="margin-bottom:0;font-size:14px;color:var(--muted)">Each reply moves the drill on one stage. After 25 seconds of silence the scammer sends one ISOLATION nudge, which doesn't advance the stage (at most one per stage). If the AI is slower than about 8 seconds or fails, the stage's canned line is used. After 3 failures in a row, "Running in offline practice mode" is shown. <code>?demo=1</code> runs the drill fully on canned lines.</p>
+</div>
+
+<h2>Endings: decided by code, never by the AI</h2>
+<div class="card">
+<table>
+<tr><th>Ending</th><th>Trigger</th><th>Label</th></tr>
+<tr><td>Win</td><td>Tapping Hang up or Call [safe contact]</td><td>Hung up / Called [contact]</td></tr>
+<tr><td>Loss</td><td>The reply contains the exact fake OTP</td><td>Shared the OTP</td></tr>
+<tr><td>Loss</td><td>The reply matches a sensitive-number pattern (blocked, never sent)</td><td>Tried to share a code or personal number</td></tr>
+<tr><td>Loss</td><td>Tapping Pay</td><td>Sent money</td></tr>
+<tr><td>Partial</td><td>Stage 10 completes and the parent is still on the line</td><td>Stayed on the line too long</td></tr>
+</table>
+</div>
+
+<h2>Safety guard (in the browser, before anything is sent)</h2>
+<details open><summary>Checked in order <span class="pill">ENDS AS A LOSS</span></summary><ol>
+<li><strong>The exact fake OTP</strong> → "Shared the OTP"</li>
+<li><strong>Always blocked:</strong> an Aadhaar pattern (12 digits), a card number (13–19 digits), a PAN (ABCDE1234F), or "PIN", "CVV", "OTP" or "code" followed by digits</li>
+<li><strong>A 4–6 digit number that looks like a code:</strong> (a) at stage 5 or later, when the reply is mostly just the number, or (b) next to OTP, code, PIN, password or CVV at any stage</li></ol></details>
+<details open><summary>Never blocked <span class="pill">SENT NORMALLY</span></summary>
+<table><tr><th>Reply</th><th>Result</th></tr>
+<tr><td>"I was born in 1952"</td><td>continues (a year)</td></tr>
+<tr><td>"my flat is 1204"</td><td>continues (a sentence outside the OTP stage)</td></tr>
+<tr><td>"I only have ₹5000"</td><td>continues (an amount)</td></tr>
+<tr><td>"call me on +91 98765 43210"</td><td>continues (a phone number)</td></tr>
+<tr><td>"482913" after the OTP SMS</td><td><strong>loss</strong>: tried to share a code</td></tr>
+<tr><td>"my PIN is 4521"</td><td><strong>loss</strong> at any stage</td></tr></table>
+<div>A blocked message is never sent or stored, and the text box is cleared. The loss screen adds: "Please never type real details, even in practice."</div></details>
+<details><summary>Always on</summary><ul><li>A permanent training strip</li><li>Fictional officer, fake OTP, fake account number</li><li>The scammer's instructions framed as a consented training simulation</li><li>Nothing kept after the session; API key never in the repo</li></ul></details>
+
+<h2>Boundary</h2>
+<details><summary>Deferred <span class="pill">NOT NOW</span></summary><ul>
+<li><strong>Hindi / Hinglish:</strong> needs translated canned lines, tips and interface text</li><li><strong>Grandparent-scam scenario:</strong> polish one script first</li><li><strong>Voice:</strong> latency and reliability risk</li><li><strong>Link to another phone:</strong> needs hosting and shared state</li><li><strong>Drill history:</strong> needs storage, against "store nothing"</li></ul></details>
+<details><summary>Non-goals</summary><ul><li>Accounts, login, databases</li><li>Real calls or SMS</li><li>AI-generated safety advice</li><li>The AI judging the outcome</li><li>Collecting any real personal or financial data</li><li>A game-show feel (points, leaderboards, confetti)</li></ul></details>
+
+<h2>Decisions made at review</h2>
+<div class="card"><ul style="margin:0"><li>The safety guard was narrowed: sensitive patterns are always blocked, short numbers only when they look like a code</li><li>A "Your name" field for the child in Setup</li><li>Safe contact = a name and an optional relation, so the button reads "Call Rahul (son)"</li><li>The bank is free text ("e.g. SBI, HDFC")</li><li>The scammer says "[Parent name] ji". No gender field.</li></ul></div>
+<h2>Open questions</h2>
+<div class="card">Only the meter's point values, which will be finalised in the spec.</div>
+</main>
+<script>
+const P=`<div class="phone"><div class="ps">TRAINING DRILL – not a real call</div>`;
+const T={
+"Setup":{m:P+`<div style="font-weight:700;margin:8px 0">Set up a practice drill</div><div class="fld">Your name</div><div class="fld">Parent's name</div><div class="fld">Their bank · e.g. SBI, HDFC</div><div class="fld">Grandchild's name</div><div class="fld">Safe contact · Rahul (son)</div><div class="fld">English · <i>Hindi, Hinglish coming soon</i></div><div style="text-align:center;color:var(--amber);margin-top:6px">Use demo details</div><div class="big">Hand to [Parent]</div></div>`,
+d:`<p><strong>For the child.</strong> Clean, trustworthy family-safety style. All fields are required. <em>Use demo details</em> fills them in one tap. The note says to use first names only, and that the app stores nothing.</p><ul class="crit"><li>Demo details fill every field, and the button label updates</li><li>The button is disabled while any field is empty</li><li>Hindi and Hinglish are visible but can't be selected</li></ul>`},
+"Handoff":{m:P+`<div style="text-align:center;margin-top:60px;font-size:14px">Hi <b>[Parent]</b></div><div style="text-align:center;color:var(--muted);margin:8px">This is a practice drill set up by [child]. Nobody real is calling.</div><div class="big" style="margin-top:40px">Start practice</div></div>`,
+d:`<p><strong>For the parent.</strong> Reassuring, one big button. The timer starts on tap.</p><ul class="crit"><li>Start opens the drill, and the first message arrives after a typing indicator</li></ul>`},
+"Drill":{m:P+`<div class="ph">👮 Inspector Sharma · CBI Cyber Cell</div><div class="m"><i></i></div><div class="bub">Your Aadhaar is linked to a money-laundering case at [bank].</div><span class="chipx">AUTHORITY · Real officers don't call about cases</span><div class="me">What? Who is this?</div><div class="bub">A warrant is issued. You must act now.</div><span class="chipx">URGENCY · Pressure stops you thinking</span><div class="fld" style="margin-top:10px">Type a reply…</div><div class="btns"><span style="background:var(--red)">Hang up</span><span style="background:var(--ok)">Call Rahul (son)</span></div></div>`,
+d:`<p><strong>A familiar messaging chat, with our own branding.</strong> The header shows the caller and the pressure meter. Amber chips under each scammer bubble. A large red Hang up and green Call are always visible. The OTP banner slides down at stage 5, and the Pay card appears at stage 7.</p><ul class="crit"><li>Every scammer message has a chip and an explanation</li><li>The bank is mentioned at stage 2 and the grandchild at stage 6</li><li>Hang up and Call are always reachable without scrolling</li><li>The meter only rises, is capped at 100, and adds the same points for the same tactic</li><li>A forced classifier failure still shows the planned tactic</li><li>A different OTP on every drill; Pay ends the drill immediately</li></ul>`},
+"Ending":{m:P+`<div style="margin-top:40px;font-size:15px;font-weight:700;color:var(--ok)">You hung up. That's exactly right.</div><ul style="padding-left:16px"><li>Real police never arrest anyone over a call</li><li>"Digital arrest" doesn't exist</li><li>No official asks for your OTP</li></ul><div style="color:var(--muted)">In real life: hang up, call <b>1930</b> or report at cybercrime.gov.in</div><div class="big">Hand back to [child]</div></div>`,
+d:`<p><strong>For the parent, kind and teaching.</strong> A win shows three facts. A loss says "This is how it happens to careful people", highlights the exact message they gave in to and names its tactic. A partial says "hang up at the first threat". All show 1930 and cybercrime.gov.in.</p><ul class="crit"><li>A loss highlights the last scammer message before the slip, with its tactic</li><li>No "failed" or "fraud" wording, and no red failure style</li><li>All four endings can be reached on purpose</li></ul>`},
+"Report card":{m:P+`<div style="font-weight:700;margin:10px 0 2px;font-size:14px">Report card</div><div style="color:var(--ok);font-weight:700">Instant reflex: hung up after 1 message</div><div style="color:var(--muted)">Time on the line 0:18</div><div style="margin-top:8px">☑ AUTHORITY</div><div style="opacity:.4">☐ URGENCY ☐ SECRECY ☐ OTP ☐ PAYMENT<br><i>The scammer never got to use these</i></div><div class="fld" style="margin-top:10px"><b>Tip:</b> fixed tip for the highest-pressure tactic faced</div><div class="big">Run another drill</div></div>`,
+d:`<p><strong>For the child.</strong> Outcome, time, number of messages, tactics faced (checked) and not reached (greyed out), the moment (if lost), and one fixed tip: for the tactic at the slip, or for the highest-pressure tactic faced.</p><ul class="crit"><li>A stage-1 hang-up shows "Instant reflex" with only AUTHORITY checked</li><li>The time and count match the drill just played</li><li>Run another drill keeps the setup details</li></ul>`}};
+const tabs=document.getElementById('tabs'),panel=document.getElementById('panel');
+function show(k){[...tabs.children].forEach(b=>b.setAttribute('aria-selected',b.textContent===k));panel.innerHTML=`<div class="screen">${T[k].m}<div>${T[k].d}</div></div>`}
+Object.keys(T).forEach(k=>{const b=document.createElement('button');b.role='tab';b.textContent=k;b.onclick=()=>show(k);tabs.appendChild(b)});show('Setup');
+</script>
+</body>
+</html>

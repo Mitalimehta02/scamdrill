@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ScamDrill Scope</title>
+<style>
+:root{--bg:#faf8f5;--surface:#fff;--ink:#1d1b19;--muted:#6b645c;--line:#e4ded6;--accent:#b4232a;--accent-soft:#fbe9e9;--ok:#1f7a4d;--ok-soft:#e5f4ec;--warn:#9a6700;--warn-soft:#fdf3dc;--chip:#f1ede8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161412;--surface:#1f1c19;--ink:#f0ece6;--muted:#a59d93;--line:#35302b;--accent:#f0676d;--accent-soft:#3a1d1e;--ok:#5cc48d;--ok-soft:#173026;--warn:#e0b04a;--warn-soft:#352b14;--chip:#2a2622}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+.banner{position:sticky;top:0;background:var(--accent);color:#fff;text-align:center;font-size:13px;font-weight:600;padding:6px 16px;letter-spacing:.02em;z-index:2}
+main{max-width:860px;margin:0 auto;padding:32px 16px 64px}
+h1{font-size:2.2rem;margin:0 0 4px}
+.lede{color:var(--muted);font-size:1.1rem;margin:0 0 8px}
+.status{display:inline-block;background:var(--ok-soft);color:var(--ok);font-size:12px;font-weight:700;padding:2px 10px;border-radius:99px}
+h2{font-size:1.15rem;margin:40px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin:12px 0}
+.kernel{border-left:4px solid var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.grid .card{margin:0}
+.card h3{margin:0 0 6px;font-size:1rem}
+svg{width:100%;height:auto;display:block}
+svg text{font-family:system-ui,sans-serif;fill:var(--ink)}
+.box{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.box-accent{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.box-ok{fill:var(--ok-soft);stroke:var(--ok);stroke-width:1.5}
+.box-warn{fill:var(--warn-soft);stroke:var(--warn);stroke-width:1.5}
+.arrow{stroke:var(--muted);stroke-width:1.5;fill:none;marker-end:url(#ah)}
+.small{font-size:11px;fill:var(--muted)}
+.stages{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.stage{display:flex;gap:12px;align-items:center;padding:8px 12px;border-radius:8px;background:var(--chip);opacity:.45;transition:opacity .2s}
+.stage.on{opacity:1}
+.stage.cur{outline:2px solid var(--accent)}
+.stage b{min-width:22px}
+.tag{margin-left:auto;font-size:11px;font-weight:700;color:var(--accent);white-space:nowrap}
+.meter{height:12px;background:var(--chip);border-radius:99px;overflow:hidden;margin:12px 0 4px}
+.meter i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button{font:inherit;font-size:14px;padding:6px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--accent)}
+.note{font-size:13px;color:var(--muted)}
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin:10px 0;padding:0 20px}
+summary{cursor:pointer;padding:14px 0;font-weight:700}
+details ul{margin:0 0 16px;padding-left:20px}
+.pill{font-size:12px;font-weight:700;padding:2px 8px;border-radius:99px;margin-left:8px}
+.p-now{background:var(--ok-soft);color:var(--ok)}.p-later{background:var(--warn-soft);color:var(--warn)}.p-cut{background:var(--accent-soft);color:var(--accent)}
+blockquote{margin:0;padding-left:14px;border-left:3px solid var(--line);color:var(--muted);font-style:italic}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="banner">Planning companion: scope.md is the source of truth</div>
+<main>
+<h1>ScamDrill</h1>
+<p class="lede">A fire drill for scams, set up by the family.</p>
+<span class="status">SCOPE APPROVED</span>
+
+<h2>The kernel</h2>
+<div class="card kernel">
+<p style="margin-top:0"><strong>A family-personalised, open-ended scam rehearsal that trains the exit reflex, not knowledge.</strong> The scammer uses the family's own details, every tactic is named live, losing is detected by code rather than guessed by the AI, and the report card goes back to the child.</p>
+<blockquote>"Fire drills work the same way — everyone knows it's a drill, but the body learns the exit route."</blockquote>
+<p class="note" style="margin-bottom:0">Grounded in prebunking research, e.g. the Cambridge <a href="https://www.getbadnews.com">Bad News</a> game.</p>
+</div>
+
+<h2>Who it's for</h2>
+<div class="grid">
+<div class="card"><h3>The child</h3>An adult in India whose elderly parent could get a "digital arrest" call. Today they forward WhatsApp warnings, which don't build a reflex. <strong>They set up the drill and read the report card.</strong></div>
+<div class="card"><h3>The parent</h3>An elderly person who trusts officials and picks up their calls. Today they get no practice before the real call. <strong>They do the drill.</strong></div>
+</div>
+
+<h2>The core loop: one device, passed from hand to hand</h2>
+<div class="card">
+<svg viewBox="0 0 800 300" role="img" aria-label="Flow: child setup, handoff, parent drill, four endings, report card back to child">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor" style="fill:var(--muted)"/></marker></defs>
+<rect class="box" x="10" y="40" width="140" height="70" rx="10"/><text x="80" y="70" text-anchor="middle" font-weight="700">1. Setup</text><text x="80" y="90" text-anchor="middle" class="small">child · or "demo details"</text>
+<rect class="box" x="190" y="40" width="140" height="70" rx="10"/><text x="260" y="70" text-anchor="middle" font-weight="700">2. Handoff</text><text x="260" y="90" text-anchor="middle" class="small">"Hand to [Parent]"</text>
+<rect class="box-accent" x="370" y="30" width="170" height="90" rx="10"/><text x="455" y="62" text-anchor="middle" font-weight="700">3. The drill</text><text x="455" y="82" text-anchor="middle" class="small">parent chats with</text><text x="455" y="97" text-anchor="middle" class="small">"Inspector Sharma"</text>
+<path class="arrow" d="M150 75H186"/><path class="arrow" d="M330 75H366"/>
+<rect class="box-ok" x="590" y="10" width="200" height="40" rx="8"/><text x="690" y="35" text-anchor="middle" font-size="13">WIN · Hang up / Call family</text>
+<rect class="box-accent" x="590" y="60" width="200" height="40" rx="8"/><text x="690" y="85" text-anchor="middle" font-size="13">LOSE · typed the fake OTP</text>
+<rect class="box-accent" x="590" y="110" width="200" height="40" rx="8"/><text x="690" y="135" text-anchor="middle" font-size="13">LOSE · tapped Pay</text>
+<rect class="box-warn" x="590" y="160" width="200" height="40" rx="8"/><text x="690" y="185" text-anchor="middle" font-size="13">PARTIAL · on the line too long</text>
+<path class="arrow" d="M540 60C565 60 565 30 586 30"/><path class="arrow" d="M540 75H586"/><path class="arrow" d="M540 90C565 90 565 130 586 130"/><path class="arrow" d="M540 105C560 105 560 180 586 180"/>
+<rect class="box" x="300" y="220" width="220" height="64" rx="10"/><text x="410" y="247" text-anchor="middle" font-weight="700">4. Report card</text><text x="410" y="267" text-anchor="middle" class="small">handed back to the child</text>
+<path class="arrow" d="M690 200C690 252 600 252 524 252"/>
+<path class="arrow" d="M300 252C80 252 80 160 80 114" stroke-dasharray="4 4"/><text x="120" y="210" class="small">practise the tip next time</text>
+</svg>
+</div>
+
+<h2>How the drill stays reliable</h2>
+<div class="card">
+<p style="margin-top:0">The <strong>app</strong> sets the pace through a fixed script of stages. The AI only writes the dialogue for the current stage. The meter uses only the tactic tags. Step through a run below. The point values are the examples you proposed; the final numbers are set in the spec.</p>
+<div class="controls"><button id="prev">◀ Back</button><button id="next">Next stage ▶</button><button id="reset">Reset</button><span class="note" id="pv">Pressure 0 / 100</span></div>
+<div class="meter"><i id="bar"></i></div>
+<div class="stages" id="stages"></div>
+<p class="note">If the classifier call fails or returns junk, the app uses the tactic planned for the current stage, so the drill never breaks.</p>
+</div>
+
+<h2>What "working" looks like</h2>
+<div class="card">
+<p style="margin-top:0">A stranger can go from setup to the drill to the report card, win or lose, with no errors, in <strong>under 3 minutes</strong>.</p>
+<p style="margin-bottom:0"><strong>The "oh, that's cool" moment:</strong> the fake OTP SMS slides in while "Inspector Sharma" demands it, the chips light up and the meter spikes. You see why real people give in, and the exit buttons are right there.</p>
+</div>
+
+<h2>Boundary</h2>
+<details open><summary>Now <span class="pill p-now">PROOF OF CONCEPT</span></summary><ul>
+<li>One scenario (digital arrest), English only, text chat, one device</li>
+<li>Setup (with "Use demo details"), handoff, drill and report card screens</li>
+<li>Live tactic chips with one-line explanations, pressure meter</li>
+<li>Deterministic endings: win, OTP loss, payment loss, partial</li>
+<li>Safety: permanent training banner, fake data only, nothing real asked for or stored, consented-simulation prompt, API key in a gitignored <code>.env</code></li>
+</ul></details>
+<details><summary>Later <span class="pill p-later">STRETCH</span></summary><ul>
+<li>Hindi and Hinglish (first stretch goal: language is a prompt variable)</li>
+<li>Grandparent-scam scenario, for US judges</li>
+<li>Voice mode</li>
+<li>Send the drill to the parent's own phone by link</li>
+</ul></details>
+<details><summary>Cut <span class="pill p-cut">WITH REASONS</span></summary><ul>
+<li><strong>Accounts and login:</strong> not needed to prove the drill works; friction in the demo</li>
+<li><strong>Databases:</strong> session state is enough, and "store nothing real"</li>
+<li><strong>Real calls and SMS:</strong> unsafe and legally risky; the in-app fake SMS proves the point</li>
+<li><strong>Deployment complexity:</strong> judges watch the video and don't run the code</li>
+<li><strong>AI deciding when the parent has lost:</strong> replaced by code-based OTP and Pay detection</li>
+</ul></details>
+
+<h2>Why it matters</h2>
+<div class="card">Indians lost <strong>₹1,935 crore</strong> to digital arrest scams in 2024 (government data, reported by Inc42). Elderly people are heavily targeted, and WhatsApp warnings don't build the reflex to hang up. Practice does.</div>
+</main>
+<script>
+const S=[["Intro: \"Inspector Sharma, CBI Cyber Cell\"","AUTHORITY",10],["Accusation: Aadhaar linked to laundering at [bank]","AUTHORITY / FEAR",10],["Threat: arrest warrant, act now","URGENCY",15],["\"Don't tell anyone, stay on this call\"","SECRECY / ISOLATION",15],["Fake OTP SMS appears; scammer demands the code","OTP",20],["[Grandchild] could be affected","FEAR / URGENCY",15],["\"Transfer to RBI safe account\" Pay card appears","PAYMENT",25],["Escalation","varies",0],["Escalation","varies",0],["Escalation → PARTIAL ending if still on the line","varies",0]];
+let n=0;const el=document.getElementById('stages');
+el.innerHTML=S.map((s,i)=>`<div class="stage"><b>${i+1}</b><span>${s[0]}</span><span class="tag">${s[1]}${s[2]?' +'+s[2]:''}</span></div>`).join('');
+function draw(){const rows=el.children;let p=0;for(let i=0;i<S.length;i++){rows[i].classList.toggle('on',i<n);rows[i].classList.toggle('cur',i===n-1);if(i<n)p+=S[i][2]}p=Math.min(100,p);document.getElementById('bar').style.width=p+'%';document.getElementById('pv').textContent=`Stage ${n}/10 · Pressure ${p} / 100`}
+next.onclick=()=>{if(n<S.length)n++;draw()};prev.onclick=()=>{if(n>0)n--;draw()};reset.onclick=()=>{n=0;draw()};draw();
+</script>
+</body>
+</html>

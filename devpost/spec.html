@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ScamDrill Tech Spec</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#fff;--ink:#16202e;--muted:#5d6878;--line:#dfe2e6;--navy:#1b2a41;--amber:#b86e00;--amber-soft:#fff3dc;--ok:#1f7a4d;--ok-soft:#e4f3ea;--red:#b3261e;--red-soft:#fbe7e5;--chip:#eef0f3;--hl:#1b2a41}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f141c;--surface:#18202b;--ink:#eef1f5;--muted:#a1abb9;--line:#2b3544;--navy:#2c3f5c;--amber:#f0a93a;--amber-soft:#3a2c12;--ok:#5cc48d;--ok-soft:#153025;--red:#ef6b5e;--red-soft:#3a1b18;--chip:#222c39;--hl:#f0a93a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Noto Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+.strip{position:sticky;top:0;background:var(--amber);color:#fff;text-align:center;font-size:13px;font-weight:700;padding:6px 16px;z-index:3}
+main{max-width:920px;margin:0 auto;padding:32px 16px 64px}
+h1{font-size:2.1rem;margin:0}.lede{color:var(--muted);margin:4px 0 8px}
+.status{display:inline-block;background:var(--amber-soft);color:var(--amber);font-size:12px;font-weight:700;padding:2px 10px;border-radius:99px}
+h2{font-size:1.15rem;margin:40px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin:12px 0}
+svg{width:100%;height:auto;display:block}
+svg text{font-family:system-ui,sans-serif;fill:var(--ink)}
+.n rect{fill:var(--surface);stroke:var(--line);stroke-width:1.5;transition:stroke .2s,stroke-width .2s}
+.n.on rect{stroke:var(--hl);stroke-width:3}
+.zone{fill:none;stroke:var(--muted);stroke-dasharray:5 4;stroke-width:1.2}
+.ztitle{font-size:12px;font-weight:700;fill:var(--muted)}
+.ar{stroke:var(--muted);stroke-width:1.5;fill:none;marker-end:url(#ah)}
+.ar.on{stroke:var(--hl);stroke-width:2.5}
+.sm{font-size:11px;fill:var(--muted)}
+.stepper{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}
+button{font:inherit;font-size:14px;padding:6px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+button:hover{border-color:var(--amber)}
+#stepText{margin-top:10px;padding:12px 14px;background:var(--chip);border-radius:8px;min-height:72px}
+#stepText b{color:var(--amber)}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-weight:600}
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin:8px 0;padding:0 20px}
+summary{cursor:pointer;padding:12px 0;font-weight:700}
+summary code{font-weight:400;color:var(--muted);font-size:13px}
+details>div{padding-bottom:14px}
+.prd{display:inline-block;font-size:12px;background:var(--chip);border-radius:6px;padding:1px 6px;margin:2px 4px 2px 0;color:var(--muted)}
+pre{background:var(--chip);border-radius:8px;padding:12px;overflow:auto;font-size:13px;line-height:1.45}
+.sw{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin-right:6px;border:1px solid var(--line)}
+.guard li{margin:4px 0}
+.ok{color:var(--ok);font-weight:700}.bad{color:var(--red);font-weight:700}
+</style>
+</head>
+<body>
+<div class="strip">Planning companion: spec.md is the source of truth</div>
+<main>
+<h1>ScamDrill: technical spec</h1>
+<p class="lede">How it's built: a React app does the refereeing, and a small server keeps the key and asks two models.</p>
+<span class="status" style="background:var(--ok-soft);color:var(--ok)">SPEC APPROVED</span>
+
+<h2>Architecture: step through one scammer turn</h2>
+<div class="card">
+<svg viewBox="0 0 860 330" role="img" aria-label="Browser app with drill engine, guard, placeholders and API client; Express server with scammer and classify routes; Groq models">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--muted)"/></marker></defs>
+<rect class="zone" x="8" y="18" width="420" height="300" rx="14"/><text class="ztitle" x="22" y="38">BROWSER (React, the referee): real names stay here</text>
+<rect class="zone" x="458" y="18" width="200" height="300" rx="14"/><text class="ztitle" x="472" y="38">SERVER (Express): holds the key</text>
+<rect class="zone" x="688" y="18" width="164" height="300" rx="14"/><text class="ztitle" x="700" y="38">GROQ</text>
+<g class="n" id="n-screens"><rect x="24" y="54" width="180" height="54" rx="9"/><text x="114" y="78" text-anchor="middle" font-weight="700">Screens</text><text x="114" y="96" text-anchor="middle" class="sm">Setup · Handoff · Drill · Ending · Report</text></g>
+<g class="n" id="n-guard"><rect x="232" y="54" width="180" height="54" rx="9"/><text x="322" y="78" text-anchor="middle" font-weight="700">guard.ts</text><text x="322" y="96" text-anchor="middle" class="sm">block OTP / sensitive numbers</text></g>
+<g class="n" id="n-reducer"><rect x="24" y="140" width="180" height="54" rx="9"/><text x="114" y="164" text-anchor="middle" font-weight="700">reducer.ts</text><text x="114" y="182" text-anchor="middle" class="sm">stage · meter · endings</text></g>
+<g class="n" id="n-ph"><rect x="232" y="140" width="180" height="54" rx="9"/><text x="322" y="164" text-anchor="middle" font-weight="700">placeholders.ts</text><text x="322" y="182" text-anchor="middle" class="sm">{PARENT} ⇄ "Kamala ji"</text></g>
+<g class="n" id="n-script"><rect x="24" y="226" width="180" height="54" rx="9"/><text x="114" y="250" text-anchor="middle" font-weight="700">script.ts + tactics.ts</text><text x="114" y="268" text-anchor="middle" class="sm">canned lines · tips · points</text></g>
+<g class="n" id="n-api"><rect x="232" y="226" width="180" height="54" rx="9"/><text x="322" y="250" text-anchor="middle" font-weight="700">api.ts</text><text x="322" y="268" text-anchor="middle" class="sm">8s timeout · fallback · demo</text></g>
+<g class="n" id="n-s1"><rect x="474" y="120" width="170" height="54" rx="9"/><text x="559" y="144" text-anchor="middle" font-weight="700">/api/scammer</text><text x="559" y="162" text-anchor="middle" class="sm">prompt + output check</text></g>
+<g class="n" id="n-s2"><rect x="474" y="226" width="170" height="54" rx="9"/><text x="559" y="250" text-anchor="middle" font-weight="700">/api/classify</text><text x="559" y="268" text-anchor="middle" class="sm">JSON {tactic}</text></g>
+<g class="n" id="n-g1"><rect x="702" y="120" width="136" height="54" rx="9"/><text x="770" y="144" text-anchor="middle" font-weight="700">gpt-oss-120b</text><text x="770" y="162" text-anchor="middle" class="sm">the actor</text></g>
+<g class="n" id="n-g2"><rect x="702" y="226" width="136" height="54" rx="9"/><text x="770" y="250" text-anchor="middle" font-weight="700">gpt-oss-20b</text><text x="770" y="268" text-anchor="middle" class="sm">the labeller</text></g>
+<path class="ar" id="a1" d="M204 81H228"/>
+<path class="ar" id="a2" d="M322 108V136"/>
+<path class="ar" id="a3" d="M322 194V222"/>
+<path class="ar" id="a4" d="M412 245C440 245 440 147 470 147"/>
+<path class="ar" id="a5" d="M644 147H698"/>
+<path class="ar" id="a6" d="M412 262H470"/>
+<path class="ar" id="a7" d="M644 253H698"/>
+<path class="ar" id="a8" d="M232 253H208"/>
+<path class="ar" id="a9" d="M114 226V198"/>
+<path class="ar" id="a10" d="M114 140V112"/>
+</svg>
+<div class="stepper"><button id="bp">◀</button><button id="bn">Next step ▶</button><span id="sc" style="color:var(--muted);font-size:14px"></span></div>
+<div id="stepText"></div>
+</div>
+
+<h2>Stack</h2>
+<div class="card"><table>
+<tr><th>Piece</th><th>Choice</th><th>Why</th></tr>
+<tr><td>Frontend</td><td><a href="https://vite.dev/guide/">Vite</a> + <a href="https://react.dev">React</a> + TypeScript</td><td>Typed stages, tactics and endings</td></tr>
+<tr><td>Styling</td><td>Plain CSS + variables</td><td>Our own look, no extra dependency</td></tr>
+<tr><td>Server</td><td><a href="https://expressjs.com">Express</a> via <a href="https://tsx.is">tsx</a></td><td>The smallest way to keep the key secret</td></tr>
+<tr><td>AI SDK</td><td><a href="https://github.com/openai/openai-node">openai</a> with a custom <code>baseURL</code></td><td>Switching Groq ⇄ Gemini is a <code>.env</code> change</td></tr>
+<tr><td>Models</td><td><a href="https://console.groq.com/docs/rate-limits">Groq</a> gpt-oss-120b / gpt-oss-20b, low reasoning effort</td><td>Fast; separate limit per model; ZDR on</td></tr>
+<tr><td>Tests</td><td><a href="https://vitest.dev">Vitest</a></td><td>Guard, reducer and placeholder criteria</td></tr>
+</table>
+<p style="margin-bottom:0;font-size:14px;color:var(--muted)">Free tier: 30 requests/min, 1,000 requests/day and 8,000 tokens/min <em>per model</em>. A drill makes about 20 calls, so there's room for about 45 drills a day.</p></div>
+
+<h2>Components, with the PRD behaviours they implement</h2>
+<div id="comps"></div>
+
+<h2>The safety guard, in order</h2>
+<div class="card"><ol class="guard">
+<li>Exact fake OTP → <span class="bad">loss: shared the OTP</span></li>
+<li>Remove phone numbers first (+91 98765 43210 has 12 digits, like an Aadhaar number) → never blocked</li>
+<li>Aadhaar · card · PAN · a code word next to digits → <span class="bad">loss: tried to share</span></li>
+<li>A 4–6 digit number (not an amount or a year): at stage 5 or later and mostly just the number, or next to a code word → <span class="bad">loss</span></li>
+<li>Anything else → <span class="ok">sent (with placeholders)</span></li></ol></div>
+
+<h2>Where data lives</h2>
+<div class="card"><table>
+<tr><th>Data</th><th>Lives in</th><th>Leave and come back</th></tr>
+<tr><td>Family details</td><td>React memory</td><td>Kept for "Run another drill"; cleared on refresh</td></tr>
+<tr><td>Drill state</td><td>React reducer</td><td>Reset on Start or refresh</td></tr>
+<tr><td>API key</td><td>server <code>.env</code></td><td>Never reaches the browser</td></tr>
+<tr><td>What the AI sees</td><td>request bodies</td><td>Placeholders only; Groq ZDR on</td></tr>
+</table></div>
+
+<h2>Look and feel tokens</h2>
+<div class="card" style="display:flex;flex-wrap:wrap;gap:14px;font-size:14px">
+<span><i class="sw" style="background:#1B2A41"></i>navy #1B2A41</span><span><i class="sw" style="background:#F6F4EF"></i>off-white #F6F4EF</span><span><i class="sw" style="background:#B86E00"></i>amber #B86E00</span><span><i class="sw" style="background:#1F7A4D"></i>green #1F7A4D</span><span><i class="sw" style="background:#B3261E"></i>red (Hang up only) #B3261E</span>
+<span style="width:100%;color:var(--muted)">Noto Sans · text 18px or larger · tap targets 56px or larger · 390×844 phone frame on a laptop</span></div>
+
+<h2>File structure</h2>
+<pre>
+├── server/        index.ts (routes) · llm.ts (client, timeout, output check) · prompts.ts
+├── scripts/       refusal-test.ts  ← run first in 5-build
+├── src/
+│   ├── App.tsx    screen switch, setup, drill reducer, ?demo=1
+│   ├── drill/     script · tactics · reducer · guard · placeholders · api  (+ tests; no React)
+│   ├── screens/   Setup · Handoff · Drill · Ending · ReportCard
+│   ├── components/ PhoneFrame · TrainingStrip · PressureMeter · ChatBubble · TacticChip · OtpBanner · PayCard · ExitButtons …
+│   └── styles/    tokens.css · app.css
+├── .env.example · LICENSE (MIT) · README.md · vite.config.ts (proxy /api → :3001)
+└── devpost/       scope · prd · spec
+</pre>
+
+<h2>How to run it</h2>
+<div class="card"><pre style="margin:0">npm install
+copy .env.example .env        # add AI_API_KEY; turn on Groq Zero Data Retention
+npm run test:refusal          # will it play the role?
+npm run dev                   # → http://localhost:5173   (demo: /?demo=1)
+npm test                      # guard / reducer / placeholder tests</pre>
+<p style="margin-bottom:0;font-size:14px;color:var(--muted)">Stretch goal: <code>npm run build:demo</code> gives a static site that only runs demo mode, for GitHub Pages or Vercel.</p></div>
+
+<h2>Decisions and open issues</h2>
+<details open><summary>Your uncertainty: prompts that won't be refused</summary><div>Frame it as a consented training simulation with a fictional character. Use short lines driven by beats. Ban real numbers and links. Keep the classifier's wording clinical. <strong>Evidence:</strong> <code>npm run test:refusal</code> gives 10 in-character lines and valid classifier JSON. If not, change the framing, and then fall back to Gemini.</div></details>
+<details><summary>Details I derived (open to change)</summary><div>Vitest · concurrently · final meter points (SECRECY = ISOLATION = 15) · the first-listed tactic is planned for mixed stages · fixed chip explanations · an output check on scammer lines · demo names Anjali / Kamala / SBI / Aarav / Rahul (son).</div></details>
+<details open><summary>Changes at review</summary><div><ul style="margin:0;padding-left:20px">
+<li><code>{AMOUNT}</code> and <code>{ACCOUNT}</code> placeholders, so the digit check stays strict (Vitest case)</li>
+<li><code>reasoning_effort: "low"</code> and <code>include_reasoning: false</code> on both models; never <code>reasoning_format</code></li>
+<li>The classifier's answer is validated against the tactic list; invalid → planned tactic</li>
+<li>The bubble shows immediately, and the chip animates in; planned tactic after 3 seconds</li>
+<li>Demo mode typing delay of about 1–2 seconds, based on line length</li>
+<li>An automated leakage test: no setup value in any /api/* request body</li></ul></div></details>
+<details><summary>To verify during the build</summary><div>Whether <code>json_object</code> is accepted on gpt-oss-20b · whether the 8-second timeout is comfortable.</div></details>
+</main>
+<script>
+const steps=[
+["Screens","n-screens",[],"<b>1. The parent types a reply</b> on the Drill screen."],
+["Guard","n-guard",["a1"],"<b>2. guard.ts checks it in the browser.</b> The fake OTP or a sensitive number ends the drill as a loss. Nothing is sent."],
+["Placeholders","n-ph",["a2"],"<b>3. The reply is added to the history</b> in placeholder form. Real names never leave the browser."],
+["API client","n-api",["a3"],"<b>4. api.ts asks for the next line,</b> sending the stage and the last 6 messages, with an 8-second timeout."],
+["Scammer route","n-s1",["a4"],"<b>5. /api/scammer adds the training-simulation prompt</b> and the stage's beat."],
+["Actor model","n-g1",["a5"],"<b>6. gpt-oss-120b writes one short in-character line.</b> Numbers only appear as {AMOUNT} and {ACCOUNT}. The server checks the line: a refusal, 6 or more digits, or a link → {fallback:true}."],
+["Classifier","n-s2",["a6"],"<b>7. The bubble appears straight away.</b> In parallel, the line (in placeholder form) goes to /api/classify."],
+["Labeller model","n-g2",["a7"],"<b>8. gpt-oss-20b returns {tactic}</b>, which is checked against the 7 tactics, and the chip animates in. Invalid, or slower than 3 seconds → the stage's planned tactic."],
+["Fallbacks","n-script",["a8"],"<b>9. Anything missing is filled from script.ts and tactics.ts:</b> the canned line, the planned tactic, and the fixed chip explanation."],
+["Reducer","n-reducer",["a9"],"<b>10. The reducer records it:</b> adds the message, adds the tactic's points to the meter, and at stage 5 shows the OTP or at stage 7 the Pay card."],
+["Screen","n-screens",["a10"],"<b>11. The Drill screen shows the bubble</b> with the real names swapped in, the amber chip, and the meter rising."]];
+let i=0;
+function draw(){document.querySelectorAll('.n').forEach(n=>n.classList.remove('on'));document.querySelectorAll('.ar').forEach(a=>a.classList.remove('on'));
+const s=steps[i];document.getElementById(s[1]).classList.add('on');s[2].forEach(a=>document.getElementById(a).classList.add('on'));
+document.getElementById('stepText').innerHTML=s[3];document.getElementById('sc').textContent=`Step ${i+1} of ${steps.length}`}
+bn.onclick=()=>{i=(i+1)%steps.length;draw()};bp.onclick=()=>{i=(i-1+steps.length)%steps.length;draw()};draw();
+const C=[
+["Server: API Routes","server/index.ts","POST /api/scammer {stage, history, nudge?} → {text}|{fallback:true} · POST /api/classify {text} → {tactic}|{fallback:true} · never logs bodies, 4 KB limit, never sends errors to the browser.",["Resilience and Demo Mode","Drill Script and Pacing"]],
+["Server: LLM Client","server/llm.ts","One OpenAI-SDK client with baseURL from .env and an 8s timeout; reasoning_effort low, include_reasoning false. Output check: empty, refusal markers, 6+ digits, URLs or over 80 words → fallback. Logs only the model, latency and tokens.",["Resilience and Demo Mode"]],
+["Server: Prompts","server/prompts.ts","Consented training-simulation framing, the fictional Inspector Sharma, 1–3 sentences, placeholders used exactly, \"{PARENT} ji\", no numbers, links or real agency contacts. The classifier asks for JSON with one of 7 tactics.",["The Drill Screen","Safety Guard"]],
+["Drill Script","src/drill/script.ts","10 stages {beat, plannedTactic, cannedLine, event}. OTP at 5, Pay at 7. NUDGE_LINE.",["Drill Script and Pacing"]],
+["Tactics, Explanations, Tips","src/drill/tactics.ts","Points: AUTHORITY 10 · FEAR 10 · URGENCY 15 · SECRECY 15 · ISOLATION 15 · OTP 20 · PAYMENT 25 (capped at 100). Fixed chip lines, tips, ending copy, win facts, 1930.",["Tactic Tagging and Pressure Meter","Report Card (Child)","Parent Ending Screen"]],
+["Drill Engine","src/drill/reducer.ts","A typed state machine: one reply = one stage, at most one nudge per stage, the meter only rises, OTP/Pay events, partial after 10, offline after 3 failures, slip index. No network code.",["Drill Script and Pacing","Endings (Deterministic)"]],
+["Safety Guard","src/drill/guard.ts","checkReply(text,{fakeOtp,stage}) → otp | sensitive | ok. A pure function, with ordered rules (see below).",["Safety Guard"]],
+["Placeholders","src/drill/placeholders.ts","fill(text, setup) in the browser only. Missing placeholders are fine, and unknown {…} are removed.",["Safety Guard"]],
+["API Client","src/drill/api.ts","Fetch with an 8s timeout, falling back to the canned line or planned tactic. Demo mode never fetches.",["Resilience and Demo Mode"]],
+["Screens","src/screens/*","Setup (demo: Anjali / Kamala / SBI / Aarav / Rahul (son)) · Handoff · Drill (25s silence timer) · Ending · ReportCard (tip choice).",["Family Setup","Handoff","The Drill Screen","Parent Ending Screen","Report Card (Child)"]],
+["App Shell","src/App.tsx","One screen variable, no router. Holds the setup and the drill reducer, and reads ?demo=1.",["The Core Journey"]]];
+document.getElementById('comps').innerHTML=C.map(c=>`<details><summary>${c[0]} <code>${c[1]}</code></summary><div>${c[2]}<br>${c[3].map(p=>`<span class="prd">prd › ${p}</span>`).join('')}</div></details>`).join('');
+</script>
+</body>
+</html>
