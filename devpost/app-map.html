@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ScamDrill App Map</title>
+<style>
+:root{--bg:#f6f4ef;--surface:#fff;--ink:#16202e;--muted:#55606e;--line:#d9dce1;--navy:#1b2a41;--amber:#b86e00;--amber-ink:#6b3f00;--amber-soft:#fff3dc;--green:#1f7a4d;--chip:#eef0f3}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f141c;--surface:#18202b;--ink:#eef1f5;--muted:#a6b0bd;--line:#2b3544;--navy:#2c3f5c;--amber:#f0a93a;--amber-ink:#f7d08a;--amber-soft:#3a2c12;--green:#5cc48d;--chip:#222c39}}
+:root[data-theme="dark"]{--bg:#0f141c;--surface:#18202b;--ink:#eef1f5;--muted:#a6b0bd;--line:#2b3544;--navy:#2c3f5c;--amber:#f0a93a;--amber-ink:#f7d08a;--amber-soft:#3a2c12;--green:#5cc48d;--chip:#222c39}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:860px;margin:0 auto;padding:32px 16px 64px}
+h1{font-size:2rem;margin:0}
+.lede{color:var(--muted);margin:4px 0 0}
+h2{font-size:1.15rem;margin:36px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:10px 0}
+.pieces{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.pieces .card{margin:0}
+.pieces h3{margin:0 0 4px;font-size:1rem}
+code{font-family:ui-monospace,Consolas,monospace;font-size:.9em;background:var(--chip);padding:1px 5px;border-radius:5px;overflow-wrap:anywhere}
+svg{width:100%;height:auto;display:block}
+svg text{font-family:system-ui,sans-serif;fill:var(--ink)}
+.bx{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+.bx-a{fill:var(--amber-soft);stroke:var(--amber);stroke-width:1.5}
+.zone{fill:none;stroke:var(--muted);stroke-dasharray:5 4}
+.zt{font-size:12px;font-weight:700;fill:var(--muted)}
+.ar{stroke:var(--muted);stroke-width:1.5;fill:none;marker-end:url(#ah)}
+.sm{font-size:11px;fill:var(--muted)}
+.num{font-size:12px;font-weight:700;fill:var(--amber)}
+ol.route{padding-left:0;list-style:none;counter-reset:s}
+ol.route>li{counter-increment:s;position:relative;padding:14px 18px 14px 58px;background:var(--surface);border:1px solid var(--line);border-radius:12px;margin:10px 0}
+ol.route>li:before{content:counter(s);position:absolute;left:16px;top:14px;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:grid;place-items:center;font-weight:700}
+.where{font-weight:700}
+.anchor{color:var(--muted);font-size:.95em}
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin:8px 0;padding:0 18px}
+summary{cursor:pointer;padding:12px 0;font-weight:700}
+details>div{padding-bottom:14px}
+.practice{border-left:4px solid var(--amber)}
+pre{background:var(--chip);border-radius:8px;padding:12px;overflow:auto;font-size:14px;margin:6px 0}
+.foot{color:var(--muted);font-size:14px;margin-top:28px}
+</style>
+</head>
+<body>
+<main>
+<h1>ScamDrill: app map</h1>
+<p class="lede">A pocket guide to the finished code: what the main pieces are, what happens when the parent sends a reply, and where to start when you want to change something.</p>
+
+<h2>The pieces</h2>
+<div class="pieces">
+  <div class="card"><h3>The referee: browser rules</h3><code>src/drill/</code>: the 10-stage script, the drill rules (<code>reducer.ts</code>), the safety guard, placeholders and report logic. Plain, unit-tested code with no AI in it.</div>
+  <div class="card"><h3>The screens</h3><code>src/screens/</code>: Setup → Handoff → Drill → Ending → Report card. They show state and pass actions to the reducer.</div>
+  <div class="card"><h3>The key keeper: server</h3><code>server/</code>: an Express server with two routes. It holds the Groq key, adds the prompts, and checks every AI output.</div>
+  <div class="card"><h3>The two models (Groq)</h3><code>gpt-oss-120b</code> writes Inspector Sharma's line, and <code>gpt-oss-20b</code> labels its tactic. Both have written-in-advance fallbacks.</div>
+</div>
+
+<h2>One action, end to end: the parent sends a reply</h2>
+<div class="card">
+<svg viewBox="0 0 820 300" role="img" aria-label="The parent's reply goes through the safety guard and placeholders, the reducer advances the stage, the API client asks the server, the server asks Groq's two models, and the bubble with its tactic chip appears.">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--muted)"/></marker></defs>
+<rect class="zone" x="6" y="16" width="470" height="276" rx="12"/><text class="zt" x="18" y="34">BROWSER (real names stay here)</text>
+<rect class="zone" x="496" y="16" width="318" height="276" rx="12"/><text class="zt" x="508" y="34">SERVER + GROQ</text>
+<rect class="bx" x="20" y="48" width="200" height="60" rx="9"/><text x="120" y="72" text-anchor="middle" font-weight="700">send()</text><text x="120" y="92" text-anchor="middle" class="sm">guard → placeholders</text>
+<rect class="bx" x="250" y="48" width="210" height="60" rx="9"/><text x="355" y="72" text-anchor="middle" font-weight="700">drillReducer</text><text x="355" y="92" text-anchor="middle" class="sm">PARENT_REPLY: stage + 1</text>
+<rect class="bx" x="250" y="140" width="210" height="60" rx="9"/><text x="355" y="164" text-anchor="middle" font-weight="700">getScammerLine / classify</text><text x="355" y="184" text-anchor="middle" class="sm">timeouts + fallbacks</text>
+<rect class="bx" x="512" y="140" width="290" height="60" rx="9"/><text x="657" y="164" text-anchor="middle" font-weight="700">generateScammerLine → classifyTactic</text><text x="657" y="184" text-anchor="middle" class="sm">prompt · output check · tactic list</text>
+<rect class="bx-a" x="20" y="222" width="440" height="56" rx="9"/><text x="240" y="246" text-anchor="middle" font-weight="700">Bubble appears, then the amber chip, and the meter rises</text><text x="240" y="265" text-anchor="middle" class="sm">SCAMMER_MESSAGE, then TAG (in the reducer)</text>
+<path class="ar" d="M220 78H246"/>
+<path class="ar" d="M355 108V136"/>
+<path class="ar" d="M460 170H508"/>
+<path class="ar" d="M657 200C657 250 520 250 464 250"/>
+</svg>
+</div>
+
+<h2>The route: 3 stops (a reference route)</h2>
+<ol class="route">
+  <li><span class="where">src/screens/DrillScreen.tsx</span>, <span class="anchor">search: <code>function send</code></span><br>
+  The reply first goes through <code>checkReply</code> (<code>src/drill/guard.ts</code>). The fake OTP or a sensitive number ends the drill right here, and the text is never stored or sent. Otherwise <code>toPlaceholders</code> turns "Can I call Rahul?" into "Can I call {SAFE_CONTACT}?", and the reducer's <code>case "PARENT_REPLY"</code> advances exactly one stage.</li>
+  <li><span class="where">src/drill/api.ts</span>, <span class="anchor">search: <code>export async function getScammerLine</code> and <code>export async function classify</code></span><br>
+  The stage change triggers the first <code>useEffect</code> in <code>DrillScreen.tsx</code>. It asks for Sharma's line (8-second budget, falling back to the stage's canned line), shows it straight away, then asks for the label (3-second budget, falling back to the planned tactic). This is why the drill never shows an error.</li>
+  <li><span class="where">server/llm.ts</span>, <span class="anchor">search: <code>generateScammerLine</code>, <code>checkScammerOutput</code>, <code>classifyTactic</code></span><br>
+  The training-simulation prompt (<code>server/prompts.ts</code>) plus the stage's beat go to <code>gpt-oss-120b</code>. The reply is rejected if it's a refusal, has 6 or more digits, a link, or an unknown placeholder. Then <code>ruleTactic</code> or <code>gpt-oss-20b</code> picks one of the 7 tactics, and it's checked against the list.</li>
+</ol>
+
+<h2>To change this, start here</h2>
+<details open><summary>What Sharma says, or when the OTP and Pay card appear</summary><div><code>src/drill/script.ts</code>: <code>STAGES</code> has each stage's <code>beat</code>, <code>plannedTactic</code>, <code>cannedLine</code> and <code>event</code>.</div></details>
+<details><summary>A chip's explanation, a tip, or the meter points</summary><div><code>src/drill/tactics.ts</code>: <code>TACTIC_INFO</code>. Fixed text, never AI-written. The meter cap is <code>METER_CAP</code>.</div></details>
+<details><summary>The scammer's persona or safety rules</summary><div><code>server/prompts.ts</code>: <code>SCAMMER_SYSTEM</code>. Re-run <code>npm run test:refusal</code> after any change.</div></details>
+<details><summary>What counts as a sensitive number</summary><div><code>src/drill/guard.ts</code>: <code>checkReply</code>. Add a case to <code>src/drill/guard.test.ts</code> first.</div></details>
+<details><summary>Ending and report-card wording</summary><div><code>src/drill/report.ts</code> (<code>WIN_FACTS</code>, <code>ENDING_LABELS</code>, tip choice), <code>src/screens/EndingScreen.tsx</code> and <code>src/screens/ReportCard.tsx</code>.</div></details>
+<details><summary>Colours, sizes, fonts</summary><div><code>src/styles/tokens.css</code> (the design tokens) and <code>src/styles/app.css</code>.</div></details>
+<details><summary>Switching the AI provider</summary><div><code>.env</code>: <code>AI_BASE_URL</code>, <code>SCAMMER_MODEL</code>, <code>CLASSIFIER_MODEL</code> (see <code>.env.example</code>). No code change is needed.</div></details>
+
+<h2>A practice to reuse</h2>
+<div class="card practice">
+<p style="margin-top:0"><strong>Write the rule as something you can observe, then make a test enforce it.</strong> The PRD's safety rule "never send real data to the AI" became a concrete acceptance criterion in the spec: <em>no setup value appears in any <code>/api/*</code> request body</em>. Turning that into an automated test (<code>src/drill/api.test.ts</code>) forced a question the plan had missed. What about names the <em>parent</em> types, like "Can I call Rahul?" The answer, <code>toPlaceholders</code>, is recorded under Revisions in <code>devpost/checklist.md</code>, and the test has guarded it ever since.</p>
+<p style="margin-bottom:0">The same thing happened with the AI itself. Live runs of <code>npm run test:refusal</code> surfaced a stage-jumping line, a misspelled <code>{GRUNDCHILD}</code> placeholder and a mislabelled payment demand. Each became a prompt change or a code check, each with a test. <strong>On your next project:</strong> for every "must never" in your plan, name the observable evidence and put a test on it before you build the feature.</p>
+</div>
+
+<h2>Run it again</h2>
+<pre>npm install
+copy .env.example .env      # add AI_API_KEY (Groq)
+npm run dev                 # http://localhost:5173   ·  demo, no key needed: /?demo=1
+npm test                    # unit tests
+npm run test:refusal        # live check that the model plays the role</pre>
+
+<p class="foot">A snapshot of the code at commit <code>f4996b9</code> (slice 4). Paths and symbols can drift as the code changes. Search for the symbol names if a line has moved.</p>
+</main>
+</body>
+</html>

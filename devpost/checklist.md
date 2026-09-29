@@ -66,15 +66,15 @@ Build mode: learn (tight: 3–5 bullets on what changed and why, the 1–2 key f
 
 ## Code Tour and App Map
 
-- [ ] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
-- [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
-- [ ] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
+- [x] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
+- [x] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
+- [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
-Activity and evidence: [not started]
-Route and stops: [not started]
-Edit outcome: [not started]
-Reflection: [not started]
-Activity mode: [not started]
+Activity and evidence: Guided route offered, connected to the learner's goal of understanding the two-step AI pipeline. The learner reported the walkthrough done; per-stop summaries were not recorded. Takeaway grounded in the "no setup value in /api/* bodies" criterion → `src/drill/api.test.ts` → the `toPlaceholders` revision.
+Route and stops: (1) `src/screens/DrillScreen.tsx` `function send` → `checkReply`, `toPlaceholders`, reducer `PARENT_REPLY`; (2) `src/drill/api.ts` `getScammerLine` / `classify` (timeouts, fallbacks); (3) `server/llm.ts` `generateScammerLine`, `checkScammerOutput`, `classifyTactic` / `ruleTactic`.
+Edit outcome: Offered (URGENCY chip text). No change was present in the working tree, so nothing was committed.
+Reflection: Offered; not answered.
+Activity mode: Live app and editor (learner-reported).
 
 ## Revisions
 - Scammer prompt now says "deliver ONLY this beat; never ask for a code or money unless the beat asks" and "your grandchild {GRANDCHILD}". In the first live run, stage 3 jumped ahead to demanding {AMOUNT}, and the model wrote "your {GRANDCHILD}".
