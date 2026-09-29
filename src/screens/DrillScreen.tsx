@@ -117,6 +117,7 @@ export function DrillScreen({
         {drill.otpVisible && <OtpBanner code={drill.fakeOtp} />}
 
         <div className="chat" ref={chatRef} aria-live="polite">
+          <div className="system-note">Incoming call · CBI Cyber Cell, Delhi</div>
           {drill.messages.map((m) =>
             m.kind === "pay" ? (
               <PayCard key={m.id} disabled={!!drill.ending} onPay={() => exit("pay")} />

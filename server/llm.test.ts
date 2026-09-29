@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkScammerOutput, parseTactic, tidyLine } from "./llm";
+import { checkScammerOutput, parseTactic, ruleTactic, tidyLine } from "./llm";
 import { STAGES } from "../src/drill/script";
 
 describe("checkScammerOutput", () => {
@@ -49,6 +49,13 @@ describe("parseTactic", () => {
     expect(parseTactic('{"tactic": "GUILT"}')).toBeNull();
     expect(parseTactic("URGENCY")).toBeNull();
     expect(parseTactic("{not json}")).toBeNull();
+  });
+});
+
+describe("ruleTactic", () => {
+  it("labels any line with the payment placeholders as PAYMENT, without the model", () => {
+    expect(ruleTactic("Send {AMOUNT} to {ACCOUNT} or {GRANDCHILD} may be questioned.")).toBe("PAYMENT");
+    expect(ruleTactic("Your grandchild {GRANDCHILD} may be questioned.")).toBeNull();
   });
 });
 

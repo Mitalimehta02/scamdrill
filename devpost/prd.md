@@ -125,7 +125,7 @@ Source: `scope.md > What "Working" Looks Like`. The AI never decides the outcome
 Kind and teaching, never shaming. Every ending screen has a **Hand back to [child]** button at the bottom.
 - **Win:** "You hung up. That's exactly right." Three facts:
   - Real police or CBI never arrest anyone over a call.
-  - "Digital arrest" doesn't exist.
+  - "Digital arrest" doesn't exist in Indian law.
   - No official ever asks for your OTP.
 
   Then: "In real life: hang up, then call **1930** (National Cyber Crime Helpline) or report at **cybercrime.gov.in**."
@@ -146,7 +146,7 @@ Kind and teaching, never shaming. Every ending screen has a **Hand back to [chil
 - **Tips are fixed, written by us:** one per tactic and one per ending. There is no AI-generated safety advice.
   - After a loss, the tip is the one for the tactic active at the slip.
   - After a win or partial, it's the tip for the highest-pressure tactic they faced.
-- **Hanging up at stage 1** shows as the best result: "Instant reflex: hung up after 1 message." All the other tactics are greyed out.
+- **Ending the call (Hang up or Call) after one message** shows as the best result: "Instant reflex: ended the call after 1 message." All the other tactics are greyed out.
 - **Run another drill** returns to Setup with the details kept.
   - [ ] Hanging up after one message shows "Instant reflex", with only AUTHORITY checked and the rest greyed out.
   - [ ] The time and message count match the drill that was just played.

@@ -39,7 +39,7 @@ Build mode: learn (tight: 3–5 bullets on what changed and why, the 1–2 key f
   Learner check: In `/?demo=1`, play the drill four times: hang up early, type the OTP when it appears, tap Pay, and reply until stage 10. Also type "I was born in 1952" and "my flat is 1204" to confirm they don't end it. Does each ending feel right?
   Commit: `slice 3: otp, pay card, safety guard and deterministic endings`
 
-- [ ] **4. The parent's ending screen and the child's report card close the loop**
+- [x] **4. The parent's ending screen and the child's report card close the loop**
   Becomes usable: The full kind, teaching ending for each outcome (win facts, the highlighted slip message, the sensitive-data line, 1930 and cybercrime.gov.in). Then Hand back to [child] → a report card with the outcome, time, message count, tactics faced and not reached, the "Instant reflex" case, and a fixed tip. Run another drill keeps the setup details.
   Why now: This completes the journey a stranger must finish in under 3 minutes (the definition of done), and it's the screen the video's 30 seconds on the report card depends on.
   PRD ref: `prd.md > Parent Ending Screen`, `prd.md > Report Card (Child)`, `prd.md > The Core Journey`, `prd.md > States and Boundaries`
@@ -52,11 +52,17 @@ Build mode: learn (tight: 3–5 bullets on what changed and why, the 1–2 key f
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after slice 2 (the look and feel of the live drill can still shape slices 3–4)
-- [ ] Final kick-the-tires exploration and feedback completed
+- [x] Final kick-the-tires exploration and feedback completed (learner tried win, report card, OTP and Pay losses; five fixes requested and verified)
 
 ## Final Review
 
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+- [x] Report card headline uses neutral wording ("Instant reflex: ended the call after 1 message"), because it said "hung up" after Call [contact]
+- [x] Win fact reads "'Digital arrest' doesn't exist in Indian law."
+- [x] Confirm Hang up / Call stay active while the scammer is typing
+- [x] Centred system note at the top of the chat: "Incoming call · CBI Cyber Cell, Delhi"
+- [x] README: screenshots at the top, "Built with the Devpost Learn skill pack" (links to scope/prd/spec), and an "AI tools used" disclosure (Claude Code, Groq gpt-oss)
+- [x] Learner retests OTP and Pay loss screens (reported tested; no changes requested, and no specific observations were given)
+- [x] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map
 
@@ -86,3 +92,5 @@ Activity mode: [not started]
 - The Pay card is stored as a special chat item (`kind: "pay"`) that is excluded from the AI history and from tagging, and the loss screen's "moment" uses the scammer's last actual line. The spec didn't say how the card lives in the chat.
 - The silence timer restarts while the parent is typing, so a slow typist isn't interrupted mid-reply. The PRD only said "25 seconds with no reply".
 - Early-checkpoint feedback (learner tried the drill and reviewed screenshots): it reads as calm and serious, not generic. Fixes applied: a compact header (name on one line, smaller badge and timer, a one-row meter), 56px exit buttons, timestamps tucked into the bubble's last line, scrolling that keeps a new message's top in view, and hidden scrollbars inside the phone. The "coming soon" language options were confirmed.
+- A deterministic rule labels any scammer line containing `{AMOUNT}` or `{ACCOUNT}` as PAYMENT before the classifier is asked. In a live run, gpt-oss-20b labelled a stage 8 line demanding {AMOUNT}, which also threatened the grandchild, as FEAR, despite the prompt's priority rule.
+- The report card's second stat reads "scammer messages" (not "…before the exit"), because the longer label wrapped onto three lines in the phone frame.

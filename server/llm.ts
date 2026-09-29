@@ -142,9 +142,21 @@ export function parseTactic(content: string): Tactic | null {
   }
 }
 
+/** A money demand always carries our payment placeholders, so it needs no model to recognise.
+ *  (Live testing: the small classifier labelled "send {AMOUNT} … or {GRANDCHILD} may be questioned" as FEAR.) */
+export function ruleTactic(text: string): Tactic | null {
+  return /\{(AMOUNT|ACCOUNT)\}/.test(text) ? "PAYMENT" : null;
+}
+
 export async function classifyTactic(text: string): Promise<TacticResult> {
   const model = process.env.CLASSIFIER_MODEL || "openai/gpt-oss-20b";
   const start = Date.now();
+  const byRule = ruleTactic(text);
+  if (byRule) {
+    const meta = { model: "rule", ms: 0 };
+    log("classify", meta, `ok:${byRule} (rule)`);
+    return { tactic: byRule, meta };
+  }
   const request = (jsonMode: boolean) =>
     getClient().chat.completions.create({
       model,

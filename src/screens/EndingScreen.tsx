@@ -1,23 +1,81 @@
-// Placeholder for slice 2. Slice 4 replaces this with the full kind, teaching ending (prd.md > Parent Ending Screen).
+// prd.md > Parent Ending Screen — the parent is holding the phone at the moment it ends,
+// so they learn first. Kind and teaching, never shaming: no "failed", no red failure style.
 
-import type { Ending } from "../drill/reducer";
+import { TacticChip } from "../components/TacticChip";
+import { fill } from "../drill/placeholders";
+import { REAL_LIFE_STEPS, WIN_FACTS, type DrillReport } from "../drill/report";
+import { safeContactLabel, type FamilySetup } from "../drill/setup";
 
-const LABELS: Record<Ending["reason"], string> = {
-  hangup: "Hung up",
-  call: "Called your safe contact",
-  otp: "Shared the OTP",
-  sensitive: "Tried to share a code or personal number",
-  pay: "Sent money",
-  stayed: "Stayed on the line too long",
-};
-
-export function EndingScreen({ ending, onRestart }: { ending: Ending; onRestart: () => void }) {
+function RealLife() {
   return (
-    <div className="screen ending">
-      <h1>{ending.type === "win" ? "You hung up. That's exactly right." : "Drill ended"}</h1>
-      <p className="lede">{LABELS[ending.reason]}</p>
-      <button type="button" className="btn btn-primary" onClick={onRestart}>
-        Run another drill
+    <div className="real-life">
+      <div className="real-life-title">In real life</div>
+      Hang up, then call <strong className="helpline">{REAL_LIFE_STEPS.helpline}</strong> ({REAL_LIFE_STEPS.helplineName}) or
+      report at <strong>{REAL_LIFE_STEPS.site}</strong>.
+    </div>
+  );
+}
+
+export function EndingScreen({
+  report,
+  setup,
+  onHandBack,
+}: {
+  report: DrillReport;
+  setup: FamilySetup;
+  onHandBack: () => void;
+}) {
+  const { ending, slip } = report;
+  const child = setup.childName.trim();
+
+  return (
+    <div className={`screen ending ending-${ending.type}`}>
+      {ending.type === "win" && (
+        <>
+          <div className="ending-icon win" aria-hidden="true">✓</div>
+          <h1>
+            {ending.reason === "call" ? `You called ${safeContactLabel(setup)}.` : "You hung up."} That's exactly right.
+          </h1>
+          <ul className="facts">
+            {WIN_FACTS.map((f) => (
+              <li key={f}>{f}</li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {ending.type === "loss" && (
+        <>
+          <h1>This is how it happens to careful people.</h1>
+          <p className="ending-lede">Here's the moment:</p>
+          {slip && (
+            <div className="moment">
+              <div className="bubble">{fill(slip.text, setup)}</div>
+              <TacticChip tactic={slip.shownTactic} />
+            </div>
+          )}
+          {ending.reason === "sensitive" && (
+            <p className="gentle">
+              Please never type real details, even in practice. In a real call, this is exactly what they want.
+            </p>
+          )}
+        </>
+      )}
+
+      {ending.type === "partial" && (
+        <>
+          <div className="ending-icon partial" aria-hidden="true">!</div>
+          <h1>You didn't give anything away.</h1>
+          <p className="ending-lede">
+            But you stayed on the line for {report.scammerMessages} messages. Next time, hang up at the first threat.
+          </p>
+        </>
+      )}
+
+      <RealLife />
+      <div className="spacer" />
+      <button type="button" className="btn btn-primary" onClick={onHandBack}>
+        Hand back to {child || "your family"}
       </button>
     </div>
   );
