@@ -19,7 +19,7 @@ Build mode: learn (tight: 3–5 bullets on what changed and why, the 1–2 key f
   Learner check: Put your Groq key in `.env` (never in chat), turn on Zero Data Retention in the Groq console, run `npm run test:refusal`, and read Sharma's 10 lines. Do they sound like a real digital-arrest script, and are the placeholders used?
   Commit: `slice 1: groq refusal test + output check`
 
-- [ ] **2. A family can set up a drill and the parent can chat with a tagged, live scammer**
+- [x] **2. A family can set up a drill and the parent can chat with a tagged, live scammer**
   Becomes usable: Setup (with Use demo details) → Handoff → Drill. Sharma's lines arrive from Groq with the real names filled in. Each bubble gets an amber chip that animates in, and the meter rises. Hang up and Call are always visible (for now they just end the drill with a simple placeholder screen). Demo mode, canned-line fallbacks and the offline note all work. The phone frame and training strip are styled.
   Why now: This is the kernel: a family-personalised rehearsal with tactics named live, using the two-step pipeline. Everything else hangs off it, and it's where your first reaction to the look and feel matters most.
   PRD ref: `prd.md > Family Setup`, `prd.md > Handoff`, `prd.md > The Drill Screen`, `prd.md > Tactic Tagging and Pressure Meter`, `prd.md > Resilience and Demo Mode`, `prd.md > Look and Feel`
@@ -76,3 +76,9 @@ Activity mode: [not started]
 - The JSON-mode fallback is per call (retry once with prompt-only JSON on a 400), not switched off globally. Groq returned a single 400 in JSON mode mid-run, which previously disabled it for the rest of the session.
 - The output check also rejects unknown placeholders. The live run produced `{GRUNDCHILD}`, which would have silently dropped the grandchild's name.
 - Nudges use the fixed ISOLATION tag and skip the classifier. The PRD says a nudge is tagged ISOLATION, but the classifier labelled one URGENCY.
+- Parent replies are converted to placeholders in the browser (`toPlaceholders`) before being stored or sent, and a `{CHILD}` placeholder was added. The plan only covered names in scammer text, but a parent naturally types "Can I call Rahul?", which would have sent a real name to the AI.
+- The relation field ("son") isn't replaced or included in the leakage test. It's a generic word, not identifying data, and replacing "son" everywhere would garble normal replies.
+- The partial ending after stage 10 was moved from slice 3 into the slice 2 reducer. Without it, a reply at stage 10 would request a non-existent stage 11 and crash; slice 3 still adds the rest of the endings.
+- React StrictMode is left off. In development it runs effects twice, which doubles every Groq call against the 8,000 tokens/minute free tier.
+- Live-mode scammer lines wait at least 900 ms. Groq often answers in about 0.5 s, which made the typing indicator flicker.
+- Early-checkpoint tweaks added to slice 2 at the learner's request: the meter shifts colour (slate → amber → red), "typing…" in the header, bubble timestamps, a chip slide-in with a brief amber glow on its bubble, and an "● On call mm:ss" header timer. The PRD's "red only for Hang up" was relaxed for the meter's top band.

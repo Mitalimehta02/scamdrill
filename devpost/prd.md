@@ -37,7 +37,7 @@ The **"TRAINING DRILL – not a real call"** strip is visible on every screen. (
 ## Look and Feel
 - **Mobile-first.** On a laptop, the app is shown inside a centred phone-sized frame.
 - **Drill screen:** looks like a familiar messaging chat (bubbles, a header with the caller's name and a generic "official" avatar, a typing indicator), because real digital arrest scams happen over WhatsApp or Skype. It uses **our own branding**: no WhatsApp logos, names or exact colours.
-- **Palette:** calm and serious. Deep navy/slate with off-white, **one amber accent** for warnings (the training strip and red-flag chips), **green only for success**, and red only for the Hang up button.
+- **Palette:** calm and serious. Deep navy/slate with off-white, **one amber accent** for warnings (the training strip and red-flag chips), **green only for success**, and red for the Hang up button and the top of the pressure meter (the meter shifts slate → amber → red as it fills, so rising pressure is visible on camera).
 - **Accessible for elderly users:** base text **18px or larger**, high contrast, big tap targets, no tiny text.
 - **Font:** Noto Sans, which also supports Devanagari for later Hindi.
 - **Setup and Report card** look like a clean, trustworthy family-safety app, not a game. The ending screens are kind rather than alarming, with no red "FAILED" screen.
@@ -65,8 +65,8 @@ Source: `scope.md > What "Working" Looks Like`.
   - [ ] Tapping **Start practice** opens the drill, and the first scammer message arrives after a typing indicator.
 
 ### The Drill Screen
-- **Header:** "Inspector Sharma, CBI Cyber Cell", a generic official avatar, and the **pressure meter** bar directly underneath.
-- **Chat:** scammer bubbles on the left, parent bubbles on the right, and a typing indicator while the scammer is "writing".
+- **Header:** "Inspector Sharma, CBI Cyber Cell" (showing "typing…" while he writes), a generic official avatar, an **"● On call 02:14" timer** (the same clock gives the report card its time on the line), and the **pressure meter** bar directly underneath.
+- **Chat:** scammer bubbles on the left, parent bubbles on the right, each with a small timestamp, and a typing indicator while the scammer is "writing". When a chip arrives, it slides in (about 300ms) and its bubble glows amber briefly: the "reveal" moment.
 - **Red-flag chip** under each scammer bubble: an amber chip with the tactic name (AUTHORITY, FEAR, URGENCY, SECRECY, ISOLATION, OTP, PAYMENT) and a one-line explanation.
 - **Always visible at the bottom:** a large red **Hang up** and a large green **Call [safe contact]**, above the text box.
 - The scammer uses the family's details: the parent's name, bank and grandchild's name. It addresses the parent as **"[Parent name] ji"** (e.g. "Kamala ji"), which is respectful, gender-neutral and personal. It falls back to "Sir/Madam" only if the name is empty.

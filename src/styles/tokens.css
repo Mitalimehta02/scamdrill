@@ -1,0 +1,33 @@
+/* Design tokens — spec.md > Look and Feel. Calm and serious: navy/slate + off-white,
+   one amber accent for warnings, green only for success, red only for Hang up. */
+:root {
+  --navy: #1b2a41;
+  --navy-2: #24364f;
+  --slate: #3c4a5e;
+  --backdrop: #0f1826;
+
+  --bg: #f6f4ef;
+  --chat-bg: #eeebe4;
+  --surface: #ffffff;
+  --ink: #16202e;
+  --muted: #55606e;
+  --line: #d9dce1;
+
+  --amber: #b86e00;
+  --amber-ink: #6b3f00;
+  --amber-soft: #fff3dc;
+  --amber-line: #e8c27a;
+  --amber-strip: #ffe2a8;
+
+  --green: #1f7a4d;
+  --green-soft: #e4f3ea;
+  --red: #b3261e;
+
+  --font: "Noto Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --text: 18px; /* base size for elderly users; nothing under 15px */
+  --text-sm: 16px;
+  --text-xs: 15px;
+
+  --radius: 14px;
+  --tap: 56px;
+}

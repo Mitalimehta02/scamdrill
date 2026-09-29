@@ -29,7 +29,7 @@ const HISTORY_LIMIT = 6;
 
 const REFUSAL = /\b(I can(?:'|’)?t|I cannot|I(?:'|’)m sorry|I am sorry|as an AI|I won(?:'|’)t|I(?:'|’)m unable|I am unable|I must decline)\b/i;
 const URL = /(https?:\/\/|www\.|\b[\w-]+\.(?:com|in|org|net|gov|co)\b)/i;
-const KNOWN_PLACEHOLDERS = new Set(["PARENT", "BANK", "GRANDCHILD", "SAFE_CONTACT", "AMOUNT", "ACCOUNT"]);
+const KNOWN_PLACEHOLDERS = new Set(["PARENT", "BANK", "GRANDCHILD", "SAFE_CONTACT", "CHILD", "AMOUNT", "ACCOUNT"]);
 
 export function checkScammerOutput(text: string): { ok: true } | { ok: false; reason: string } {
   const t = text.trim();

@@ -22,10 +22,10 @@ export const STAGE_COUNT = 10;
 
 export const STAGES: Record<number, Stage> = {
   1: {
-    beat: "Introduce yourself as Inspector Sharma of the CBI Cyber Cell and say you are calling about a serious official matter concerning them.",
+    beat: "Greet them warmly but officially (\"Namaste {PARENT} ji\"), introduce yourself as Inspector Sharma from the CBI Cyber Cell, Delhi, and say you are calling about a serious matter in their name.",
     plannedTactic: "AUTHORITY",
     cannedLine:
-      "Hello, am I speaking with {PARENT} ji? This is Inspector Sharma from the CBI Cyber Cell. I am calling about a very serious official matter.",
+      "Namaste {PARENT} ji, this is Inspector Sharma from the CBI Cyber Cell, Delhi. I am calling about a serious matter registered in your name.",
   },
   2: {
     beat: "Claim their Aadhaar has been linked to a money-laundering case involving an account at {BANK}.",

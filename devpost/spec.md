@@ -108,13 +108,14 @@ Implements `prd.md > Look and Feel`. The CSS variables go in `src/styles/tokens.
 | `--ink` | `#16202E` | body text (contrast ≥ 7:1 on `--bg`) |
 | `--amber` | `#B86E00`; `--amber-soft` `#FFF3DC` | training strip, tactic chips, meter fill |
 | `--green` | `#1F7A4D` | Call button, win states only |
-| `--red` | `#B3261E` | Hang up button only, never for failure screens |
+| `--red` | `#B3261E` | Hang up button; the meter uses slate `#8FA3BF` (<35) → amber `#F0A93A` (35–69) → red `#EF5A45` (≥70). Never for failure screens. |
 
 - **Type:** Noto Sans. Base `18px`, chat text `18px`, headings 24–28px, nothing under 15px. Line height 1.5.
 - **Sizes:** tap targets at least 56px high. Hang up and Call are full-width halves, about 64px high.
 - **Phone frame:** on screens wider than 480px, the app sits in a centred 390×844 rounded frame on a dark slate backdrop. On phones it's full-screen.
 - **Chat:** scammer bubbles on the left (white, with a thin border), parent bubbles on the right (navy, white text), a three-dot typing indicator, and a generic badge avatar (an inline SVG, not a real emblem).
-- **Motion:** the OTP banner slides down (300ms), the meter fill animates its width, and chips fade in. No shaking or flashing.
+- **Motion:** the OTP banner slides down (300ms), the meter fill animates its width and colour, chips slide and fade in (300ms), and the flagged bubble glows amber once (1.6s). No shaking or flashing.
+- **Header extras:** "typing…" replaces "CBI Cyber Cell" while waiting. `CallTimer` shows "● On call mm:ss" from `startedAt`. Bubbles show `formatClock(at)` timestamps (15px).
 - **Copy tone:** calm and kind. No "failed", "fraud" or "stupid". Endings follow the PRD wording exactly.
 - **Branding:** our own "ScamDrill" wordmark. No WhatsApp logos or colours, and no real government emblems.
 
@@ -195,6 +196,7 @@ Implements `prd.md > Look and Feel`. The CSS variables go in `src/styles/tokens.
 
 ### Placeholders (`src/drill/placeholders.ts`)
 - `fill(text, setup)` swaps `{PARENT}`, `{BANK}`, `{GRANDCHILD}` and `{SAFE_CONTACT}` for the real values, and `{AMOUNT}` and `{ACCOUNT}` for the `FAKE_PAYMENT` values, when displaying. If a placeholder is missing from the text, nothing happens. Any leftover unknown `{…}` is removed.
+- `toPlaceholders(text, setup)` converts what the parent types (e.g. "Can I call Rahul?" → "Can I call {SAFE_CONTACT}?") before it is stored or sent. It is case-insensitive and matches whole words only. Includes `{CHILD}` for the child's name.
 - Real values are **never** passed to `api.ts`.
 - Canned lines use the same placeholders.
 - PRD ref: `prd.md > Safety Guard` (privacy).
