@@ -1,5 +1,7 @@
 // The family's details, held only in React memory (spec.md > Data Model). Never stored, never sent to the AI.
 
+import type { Lang } from "../i18n/strings";
+
 export interface FamilySetup {
   childName: string;
   parentName: string;
@@ -7,7 +9,7 @@ export interface FamilySetup {
   grandchildName: string;
   safeContactName: string;
   safeContactRelation: string; // optional, e.g. "son"
-  language: "en";
+  language: Lang;
 }
 
 export const EMPTY_SETUP: FamilySetup = {

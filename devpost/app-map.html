@@ -79,7 +79,7 @@ pre{background:var(--chip);border-radius:8px;padding:12px;overflow:auto;font-siz
   <li><span class="where">src/drill/api.ts</span>, <span class="anchor">search: <code>export async function getScammerLine</code> and <code>export async function classify</code></span><br>
   The stage change triggers the first <code>useEffect</code> in <code>DrillScreen.tsx</code>. It asks for Sharma's line (8-second budget, falling back to the stage's canned line), shows it straight away, then asks for the label (3-second budget, falling back to the planned tactic). This is why the drill never shows an error.</li>
   <li><span class="where">server/llm.ts</span>, <span class="anchor">search: <code>generateScammerLine</code>, <code>checkScammerOutput</code>, <code>classifyTactic</code></span><br>
-  The training-simulation prompt (<code>server/prompts.ts</code>) plus the stage's beat go to <code>gpt-oss-120b</code>. The reply is rejected if it's a refusal, has 6 or more digits, a link, or an unknown placeholder. Then <code>ruleTactic</code> or <code>gpt-oss-20b</code> picks one of the 7 tactics, and it's checked against the list.</li>
+  The training-simulation prompt (<code>server/prompts.ts</code>), the language line and the stage's beat go to <code>gpt-oss-120b</code>. <code>checkBeat</code> then enforces the pace: no money before stage 7, and each stage's personal detail must be present. The reply is rejected if it's a refusal, has 6 or more digits, a link, or an unknown placeholder. Then <code>ruleTactic</code> or <code>gpt-oss-20b</code> picks one of the 7 tactics, and it's checked against the list.</li>
 </ol>
 
 <h2>To change this, start here</h2>
@@ -88,6 +88,7 @@ pre{background:var(--chip);border-radius:8px;padding:12px;overflow:auto;font-siz
 <details><summary>The scammer's persona or safety rules</summary><div><code>server/prompts.ts</code>: <code>SCAMMER_SYSTEM</code>. Re-run <code>npm run test:refusal</code> after any change.</div></details>
 <details><summary>What counts as a sensitive number</summary><div><code>src/drill/guard.ts</code>: <code>checkReply</code>. Add a case to <code>src/drill/guard.test.ts</code> first.</div></details>
 <details><summary>Ending and report-card wording</summary><div><code>src/drill/report.ts</code> (<code>WIN_FACTS</code>, <code>ENDING_LABELS</code>, tip choice), <code>src/screens/EndingScreen.tsx</code> and <code>src/screens/ReportCard.tsx</code>.</div></details>
+<details><summary>Any on-screen text, in any language</summary><div><code>src/i18n/strings.ts</code>: <code>STRINGS.en</code>, <code>.hi</code>, <code>.hinglish</code>. Screens read them through <code>useT()</code>. Canned lines per language are in <code>src/drill/script.ts</code>. <code>src/i18n/strings.test.ts</code> fails if a language is missing a key.</div></details>
 <details><summary>Colours, sizes, fonts</summary><div><code>src/styles/tokens.css</code> (the design tokens) and <code>src/styles/app.css</code>.</div></details>
 <details><summary>Switching the AI provider</summary><div><code>.env</code>: <code>AI_BASE_URL</code>, <code>SCAMMER_MODEL</code>, <code>CLASSIFIER_MODEL</code> (see <code>.env.example</code>). No code change is needed.</div></details>
 
@@ -104,7 +105,7 @@ npm run dev                 # http://localhost:5173   ·  demo, no key needed: /
 npm test                    # unit tests
 npm run test:refusal        # live check that the model plays the role</pre>
 
-<p class="foot">A snapshot of the code at commit <code>f4996b9</code> (slice 4). Paths and symbols can drift as the code changes. Search for the symbol names if a line has moved.</p>
+<p class="foot">A snapshot of the code at slice 5 (English, हिन्दी, Hinglish). Paths and symbols can drift as the code changes. Search for the symbol names if a line has moved.</p>
 </main>
 </body>
 </html>

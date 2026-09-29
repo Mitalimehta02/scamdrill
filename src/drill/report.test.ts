@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { drillReducer, initialDrill, type DrillAction, type DrillState } from "./reducer";
-import { buildReport, ENDING_TIPS } from "./report";
-import { TACTIC_INFO, type Tactic } from "./tactics";
+import { buildReport } from "./report";
+import type { Tactic } from "./tactics";
 
 const play = (actions: DrillAction[]): DrillState => actions.reduce(drillReducer, initialDrill(1000, "482913"));
 
@@ -20,7 +20,7 @@ describe("report card", () => {
     expect(r.faced).toEqual(["AUTHORITY"]);
     expect(r.notReached).toHaveLength(6);
     expect(r.durationMs).toBe(18000);
-    expect(r.tip).toBe(TACTIC_INFO.AUTHORITY.tip);
+    expect(r.tipTactic).toBe("AUTHORITY");
   });
 
   it("after a loss, the tip and the moment come from the line they gave in to", () => {
@@ -30,13 +30,13 @@ describe("report card", () => {
     expect(r.ending).toEqual({ type: "loss", reason: "otp" });
     expect(r.slip?.id).toBe(3);
     expect(r.slip?.shownTactic).toBe("OTP");
-    expect(r.tip).toBe(TACTIC_INFO.OTP.tip);
+    expect(r.tipTactic).toBe("OTP");
     expect(r.instantReflex).toBe(false);
   });
 
   it("after a win or partial, the tip is for the highest-pressure tactic faced", () => {
     const r = buildReport(play([...turn(1, "AUTHORITY"), ...turn(2, "SECRECY"), ...turn(3, "FEAR", false), { type: "EXIT", reason: "call", now: 0 }]))!;
-    expect(r.tip).toBe(TACTIC_INFO.SECRECY.tip);
+    expect(r.tipTactic).toBe("SECRECY");
     expect(r.instantReflex).toBe(false);
   });
 
@@ -49,7 +49,7 @@ describe("report card", () => {
     const r = buildReport(play([{ type: "EXIT", reason: "hangup", now: 2000 }]))!;
     expect(r.scammerMessages).toBe(0);
     expect(r.instantReflex).toBe(true);
-    expect(r.tip).toBe(ENDING_TIPS.win);
+    expect(r.tipTactic).toBeUndefined();
   });
 
   it("returns null while the drill is still running", () => {

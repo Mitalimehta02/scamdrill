@@ -3,15 +3,19 @@
 
 import { TacticChip } from "../components/TacticChip";
 import { fill } from "../drill/placeholders";
-import { REAL_LIFE_STEPS, WIN_FACTS, type DrillReport } from "../drill/report";
+import type { DrillReport } from "../drill/report";
 import { safeContactLabel, type FamilySetup } from "../drill/setup";
+import { HELPLINE, REPORT_SITE } from "../i18n/strings";
+import { useT } from "../i18n/useT";
 
 function RealLife() {
+  const t = useT().ending;
   return (
     <div className="real-life">
-      <div className="real-life-title">In real life</div>
-      Hang up, then call <strong className="helpline">{REAL_LIFE_STEPS.helpline}</strong> ({REAL_LIFE_STEPS.helplineName}) or
-      report at <strong>{REAL_LIFE_STEPS.site}</strong>.
+      <div className="real-life-title">{t.realLifeTitle}</div>
+      {t.realLife.before} <strong className="helpline">{HELPLINE}</strong> ({t.realLife.helplineName}) {t.realLife.middle}{" "}
+      <strong>{REPORT_SITE}</strong>
+      {t.realLife.after}
     </div>
   );
 }
@@ -25,6 +29,7 @@ export function EndingScreen({
   setup: FamilySetup;
   onHandBack: () => void;
 }) {
+  const t = useT().ending;
   const { ending, slip } = report;
   const child = setup.childName.trim();
 
@@ -34,10 +39,10 @@ export function EndingScreen({
         <>
           <div className="ending-icon win" aria-hidden="true">✓</div>
           <h1>
-            {ending.reason === "call" ? `You called ${safeContactLabel(setup)}.` : "You hung up."} That's exactly right.
+            {ending.reason === "call" ? t.winCall(safeContactLabel(setup)) : t.winHangup} {t.right}
           </h1>
           <ul className="facts">
-            {WIN_FACTS.map((f) => (
+            {t.facts.map((f) => (
               <li key={f}>{f}</li>
             ))}
           </ul>
@@ -46,36 +51,30 @@ export function EndingScreen({
 
       {ending.type === "loss" && (
         <>
-          <h1>This is how it happens to careful people.</h1>
-          <p className="ending-lede">Here's the moment:</p>
+          <h1>{t.lossTitle}</h1>
+          <p className="ending-lede">{t.lossLede}</p>
           {slip && (
             <div className="moment">
               <div className="bubble">{fill(slip.text, setup)}</div>
               <TacticChip tactic={slip.shownTactic} />
             </div>
           )}
-          {ending.reason === "sensitive" && (
-            <p className="gentle">
-              Please never type real details, even in practice. In a real call, this is exactly what they want.
-            </p>
-          )}
+          {ending.reason === "sensitive" && <p className="gentle">{t.sensitive}</p>}
         </>
       )}
 
       {ending.type === "partial" && (
         <>
           <div className="ending-icon partial" aria-hidden="true">!</div>
-          <h1>You didn't give anything away.</h1>
-          <p className="ending-lede">
-            But you stayed on the line for {report.scammerMessages} messages. Next time, hang up at the first threat.
-          </p>
+          <h1>{t.partialTitle}</h1>
+          <p className="ending-lede">{t.partialLede(report.scammerMessages)}</p>
         </>
       )}
 
       <RealLife />
       <div className="spacer" />
       <button type="button" className="btn btn-primary" onClick={onHandBack}>
-        Hand back to {child || "your family"}
+        {t.handBack(child || t.family)}
       </button>
     </div>
   );

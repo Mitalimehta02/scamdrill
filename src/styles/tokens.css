@@ -23,7 +23,7 @@
   --green-soft: #e4f3ea;
   --red: #b3261e;
 
-  --font: "Noto Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font: "Noto Sans", "Noto Sans Devanagari", system-ui, -apple-system, "Segoe UI", sans-serif;
   --text: 18px; /* base size for elderly users; nothing under 15px */
   --text-sm: 16px;
   --text-xs: 15px;

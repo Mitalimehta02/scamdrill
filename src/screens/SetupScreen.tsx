@@ -1,16 +1,12 @@
 // prd.md > Family Setup — the child fills this in, then hands the phone over.
+// Picking a language switches the whole app straight away (prd.md > Languages).
 
 import { Badge } from "../components/Badge";
 import { DEMO_SETUP, isSetupComplete, type FamilySetup } from "../drill/setup";
+import { LANGS, type Lang } from "../i18n/strings";
+import { useT } from "../i18n/useT";
 
 type TextKey = Exclude<keyof FamilySetup, "language">;
-
-const FIELDS: { key: TextKey; label: string; placeholder: string; hint?: string }[] = [
-  { key: "childName", label: "Your name", placeholder: "e.g. Anjali" },
-  { key: "parentName", label: "Parent's name", placeholder: "e.g. Kamala", hint: "what the caller will call them" },
-  { key: "bank", label: "Their bank", placeholder: "e.g. SBI, HDFC" },
-  { key: "grandchildName", label: "A grandchild's name", placeholder: "e.g. Aarav" },
-];
 
 export function SetupScreen({
   setup,
@@ -21,9 +17,17 @@ export function SetupScreen({
   onChange: (next: FamilySetup) => void;
   onHandOff: () => void;
 }) {
+  const t = useT().setup;
   const set = (key: TextKey) => (e: React.ChangeEvent<HTMLInputElement>) => onChange({ ...setup, [key]: e.target.value });
   const ready = isSetupComplete(setup);
   const parent = setup.parentName.trim();
+
+  const fields: { key: TextKey; label: string; example: string; hint?: string }[] = [
+    { key: "childName", label: t.yourName, example: t.examples.child },
+    { key: "parentName", label: t.parentName, example: t.examples.parent, hint: t.parentHint },
+    { key: "bank", label: t.bank, example: t.examples.bank },
+    { key: "grandchildName", label: t.grandchild, example: t.examples.grandchild },
+  ];
 
   return (
     <form
@@ -37,64 +41,65 @@ export function SetupScreen({
         <Badge size={34} tone="dark" />
         ScamDrill
       </div>
-      <h1>Set up a practice drill</h1>
-      <p className="lede">
-        Your parent will practise a fake "digital arrest" call on this phone. These details make it feel real.
-      </p>
+      <h1>{t.title}</h1>
+      <p className="lede">{t.lede}</p>
 
-      <button type="button" className="btn btn-secondary" onClick={() => onChange(DEMO_SETUP)}>
-        Use demo details
+      {/* Language first: it changes everything below. Demo details keep the chosen language. */}
+      <div className="field">
+        <label htmlFor="language">{t.language}</label>
+        <select id="language" value={setup.language} onChange={(e) => onChange({ ...setup, language: e.target.value as Lang })}>
+          {LANGS.map((l) => (
+            <option key={l.id} value={l.id}>
+              {l.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <button type="button" className="btn btn-secondary" onClick={() => onChange({ ...DEMO_SETUP, safeContactRelation: t.demoRelation, language: setup.language })}>
+        {t.demoButton}
       </button>
 
-      {FIELDS.map((f) => (
+      {fields.map((f) => (
         <div className="field" key={f.key}>
           <label htmlFor={f.key}>
             {f.label} {f.hint && <span className="hint">· {f.hint}</span>}
           </label>
-          <input id={f.key} value={setup[f.key]} onChange={set(f.key)} placeholder={f.placeholder} autoComplete="off" />
+          <input id={f.key} value={setup[f.key]} onChange={set(f.key)} placeholder={f.example} autoComplete="off" />
         </div>
       ))}
 
       <div className="field-row">
         <div className="field">
-          <label htmlFor="safeContactName">Safe contact</label>
+          <label htmlFor="safeContactName">{t.safeContact}</label>
           <input
             id="safeContactName"
             value={setup.safeContactName}
             onChange={set("safeContactName")}
-            placeholder="e.g. Rahul"
+            placeholder={t.examples.safeContact}
             autoComplete="off"
           />
         </div>
         <div className="field">
-          <label htmlFor="safeContactRelation">Relation</label>
+          <label htmlFor="safeContactRelation">{t.relation}</label>
           <input
             id="safeContactRelation"
             value={setup.safeContactRelation}
             onChange={set("safeContactRelation")}
-            placeholder="optional"
+            placeholder={t.relationPlaceholder}
             autoComplete="off"
           />
         </div>
       </div>
 
-      <div className="field">
-        <label htmlFor="language">Language</label>
-        <select id="language" value={setup.language} onChange={() => onChange({ ...setup, language: "en" })}>
-          <option value="en">English</option>
-          <option disabled>Hindi — coming soon</option>
-          <option disabled>Hinglish — coming soon</option>
-        </select>
-      </div>
-
       <p className="note">
         <span aria-hidden="true">🔒</span>
-        Use first names only. ScamDrill never asks for real account numbers, OTPs or ID numbers, and stores nothing.
+        {t.note}
       </p>
 
       <div className="spacer" />
       <button type="submit" className="btn btn-primary" disabled={!ready}>
-        Hand to {parent || "your parent"}
+        {t.handTo(parent || t.yourParent)}
       </button>
     </form>
   );

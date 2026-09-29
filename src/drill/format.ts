@@ -6,7 +6,8 @@ export function formatDuration(ms: number): string {
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
-/** A chat-style timestamp, e.g. "11:42 pm". */
-export function formatClock(at: number): string {
-  return new Date(at).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", hour12: true });
+/** A chat-style timestamp: "11:42 pm" in English and Hinglish, 24-hour "23:42" in Hindi (no Latin "pm"). */
+export function formatClock(at: number, locale = "en-IN"): string {
+  const hour12 = !locale.startsWith("hi");
+  return new Date(at).toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit", hour12, numberingSystem: "latn" });
 }

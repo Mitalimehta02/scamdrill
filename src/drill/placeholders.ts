@@ -23,7 +23,7 @@ export function fill(text: string, setup: FamilySetup): string {
   for (const [ph, key] of NAME_PLACEHOLDERS) values[ph] = setup[key].trim();
 
   let out = text;
-  if (!values.PARENT) out = out.replace(/\{PARENT\}\s+ji/g, "Sir/Madam");
+  if (!values.PARENT) out = out.replace(/\{PARENT\}\s+(ji|जी)/g, "Sir/Madam");
   return out
     .replace(/\{([A-Z_]+)\}/g, (_, name: string) => values[name] ?? "")
     .replace(/ {2,}/g, " ")

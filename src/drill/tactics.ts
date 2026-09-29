@@ -1,5 +1,5 @@
-// Tactic names, meter points, and all fixed teaching text.
-// Written by us, never by the AI, so safety advice is always accurate (prd.md > Product Decisions).
+// Tactic IDs, meter points, and the fictional payment details — the language-free part.
+// All the words (names, chip explanations, tips) live in src/i18n/strings.ts, written by us, never by the AI.
 
 export const TACTICS = [
   "AUTHORITY",
@@ -19,42 +19,14 @@ export function isTactic(value: unknown): value is Tactic {
 
 export const METER_CAP = 100;
 
-export const TACTIC_INFO: Record<Tactic, { points: number; explanation: string; tip: string }> = {
-  AUTHORITY: {
-    points: 10,
-    explanation: "Claims to be police or CBI. Real officers never investigate anyone over a call.",
-    tip: "Practise saying \"I will call the police station myself\" and hanging up. A real officer won't mind.",
-  },
-  FEAR: {
-    points: 10,
-    explanation: "Scary news about you or your family makes it hard to think clearly.",
-    tip: "Agree together: frightening news on a call is a signal to hang up and call family, not to act.",
-  },
-  URGENCY: {
-    points: 15,
-    explanation: "Rushing you. Real legal processes never demand action within minutes.",
-    tip: "Make a family rule: any call that says \"act now\" gets a hang-up and a call to family first.",
-  },
-  SECRECY: {
-    points: 15,
-    explanation: "\"Don't tell your family\" is there so no one can warn you.",
-    tip: "Make it a family rule: anyone who says \"don't tell your family\" is a scammer.",
-  },
-  ISOLATION: {
-    points: 15,
-    explanation: "Keeping you on the line so you can't pause, check, or call someone.",
-    tip: "Practise hanging up mid-sentence. It isn't rude when someone is pressuring you.",
-  },
-  OTP: {
-    points: 20,
-    explanation: "Asking for the code sent to your phone. No official ever needs your OTP.",
-    tip: "Put a note by the phone: \"Never read out an OTP — not to the bank, police, or anyone.\"",
-  },
-  PAYMENT: {
-    points: 25,
-    explanation: "A \"safe account\" doesn't exist. No agency asks you to move money.",
-    tip: "Agree together: no money moves after a phone call without talking to family first.",
-  },
+export const TACTIC_INFO: Record<Tactic, { points: number }> = {
+  AUTHORITY: { points: 10 },
+  FEAR: { points: 10 },
+  URGENCY: { points: 15 },
+  SECRECY: { points: 15 },
+  ISOLATION: { points: 15 },
+  OTP: { points: 20 },
+  PAYMENT: { points: 25 },
 };
 
 // Fictional payment details. Shown on the Pay card and used to fill {AMOUNT} / {ACCOUNT},

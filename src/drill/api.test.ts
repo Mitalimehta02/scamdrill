@@ -59,7 +59,7 @@ describe("fallbacks", () => {
     vi.useFakeTimers();
     const line = getScammerLine(1, [], { demo: true });
     await vi.advanceTimersByTimeAsync(2000);
-    expect((await line).text).toBe(STAGES[1].cannedLine);
+    expect((await line).text).toBe(STAGES[1].cannedLine.en);
     const tag = classify("x", "AUTHORITY", { demo: true });
     await vi.advanceTimersByTimeAsync(500);
     expect(await tag).toEqual({ tactic: "AUTHORITY", source: "planned" });
@@ -69,7 +69,7 @@ describe("fallbacks", () => {
   it("uses the canned line when the server says fallback", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ fallback: true }), { status: 200 })));
     const line = await getScammerLine(3, [], { demo: false });
-    expect(line).toEqual({ text: STAGES[3].cannedLine, aiFailed: true });
+    expect(line).toEqual({ text: STAGES[3].cannedLine.en, aiFailed: true });
   });
 
   it("shows the planned tactic when the classifier takes longer than 3 seconds", async () => {
@@ -84,6 +84,19 @@ describe("fallbacks", () => {
     const tag = classify("Read me the code now", "OTP", { demo: false });
     await vi.advanceTimersByTimeAsync(CLASSIFY_TIMEOUT_MS + 1);
     expect(await tag).toEqual({ tactic: "OTP", source: "planned" });
+  });
+
+  it("uses the chosen language: Hindi canned lines, and the language is sent to the server", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string, init: RequestInit) => {
+        bodies.push(`${url} ${init.body}`);
+        return new Response(JSON.stringify({ fallback: true }), { status: 200 });
+      }),
+    );
+    const line = await getScammerLine(5, [], { demo: false, language: "hi" });
+    expect(line.text).toBe(STAGES[5].cannedLine.hi);
+    expect(JSON.parse(bodies[0].split(" ").slice(1).join(" ")).language).toBe("hi");
   });
 
   it("rejects a tactic outside the list", async () => {

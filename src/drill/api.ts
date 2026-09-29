@@ -1,6 +1,7 @@
 // Browser → server calls, each with a timeout and a written-in-advance fallback.
 // The parent never sees an error (spec.md > API Client).
 
+import type { Lang } from "../i18n/strings";
 import { NUDGE_LINE, NUDGE_TACTIC, STAGES } from "./script";
 import { isTactic, type Tactic } from "./tactics";
 
@@ -18,8 +19,13 @@ export function typingDelay(text: string): number {
   return Math.min(2000, 1000 + 15 * text.length);
 }
 
+/** The public static build (npm run build:demo): scripted lines only, no server, no key. */
+export function isDemoOnlyBuild(): boolean {
+  return import.meta.env.VITE_DEMO_ONLY === "true";
+}
+
 export function isDemoMode(): boolean {
-  if (import.meta.env.VITE_DEMO_ONLY === "true") return true;
+  if (isDemoOnlyBuild()) return true;
   return typeof window !== "undefined" && new URLSearchParams(window.location.search).get("demo") === "1";
 }
 
@@ -53,15 +59,16 @@ export interface LineResult {
 export async function getScammerLine(
   stage: number,
   history: History,
-  opts: { demo: boolean; nudge?: boolean },
+  opts: { demo: boolean; nudge?: boolean; language?: Lang },
 ): Promise<LineResult> {
-  const canned = opts.nudge ? NUDGE_LINE : STAGES[stage].cannedLine;
+  const language = opts.language ?? "en";
+  const canned = opts.nudge ? NUDGE_LINE[language] : STAGES[stage].cannedLine[language];
   if (opts.demo) {
     await sleep(typingDelay(canned));
     return { text: canned, aiFailed: false };
   }
   const [result] = await Promise.all([
-    postJson("/api/scammer", { stage, history: history.slice(-HISTORY_LIMIT), nudge: !!opts.nudge }, SCAMMER_TIMEOUT_MS),
+    postJson("/api/scammer", { stage, history: history.slice(-HISTORY_LIMIT), nudge: !!opts.nudge, language }, SCAMMER_TIMEOUT_MS),
     sleep(MIN_TYPING_MS),
   ]);
   if (result.ok && typeof result.data.text === "string" && result.data.text.trim()) {

@@ -5,9 +5,13 @@ import "dotenv/config";
 import express from "express";
 import { classifyTactic, generateScammerLine, type HistoryTurn } from "./llm";
 import { NUDGE_BEAT, STAGE_COUNT, STAGES } from "../src/drill/script";
+import type { Lang } from "../src/i18n/strings";
+
+const LANGS: Lang[] = ["en", "hi", "hinglish"];
 
 const app = express();
-app.use(express.json({ limit: "4kb" }));
+// 12 kB: Hindi text is 3 bytes per character in UTF-8, so 6 turns of history can pass 4 kB.
+app.use(express.json({ limit: "12kb" }));
 
 function parseHistory(value: unknown): HistoryTurn[] | null {
   if (!Array.isArray(value) || value.length > 30) return null;
@@ -21,14 +25,15 @@ function parseHistory(value: unknown): HistoryTurn[] | null {
 }
 
 app.post("/api/scammer", async (req, res) => {
-  const { stage, history, nudge } = req.body ?? {};
+  const { stage, history, nudge, language } = req.body ?? {};
+  const lang: Lang = LANGS.includes(language) ? language : "en";
   const turns = parseHistory(history);
   if (!Number.isInteger(stage) || stage < 1 || stage > STAGE_COUNT || !turns) {
     res.status(400).json({ fallback: true });
     return;
   }
   const beat = nudge ? NUDGE_BEAT : STAGES[stage].beat;
-  const result = await generateScammerLine(stage, beat, turns, !!nudge);
+  const result = await generateScammerLine(stage, beat, turns, !!nudge, lang);
   res.json("text" in result ? { text: result.text } : { fallback: true });
 });
 

@@ -46,6 +46,37 @@ describe("PRD examples that MUST end the drill", () => {
   });
 });
 
+describe("Devanagari digits and Hinglish / Hindi replies (slice 5)", () => {
+  it("the fake OTP in Devanagari digits is still 'Shared the OTP'", () => {
+    expect(checkReply("७३०५१४", at(5))).toBe("otp");
+  });
+
+  it.each([
+    ["४८२९१३", 5], // a code after the SMS, in Devanagari digits
+    ["१२३४ ५६७८ ९०१२", 2], // Aadhaar in Devanagari
+    ["OTP bata raha hoon 482913", 5],
+    ["code hai 482913", 3],
+    ["मेरा पिन ४५२१ है", 2],
+    ["कोड है 4821", 2],
+  ])("%s (stage %i) → loss", (text, stage) => {
+    expect(checkReply(text, at(stage))).toBe("sensitive");
+  });
+
+  it.each([
+    ["mera flat 1204 hai", 3],
+    ["mera flat 1204 hai", 6],
+    ["₹5000 hi hain", 7],
+    ["mere paas sirf 5000 rupaye hain", 7],
+    ["मेरे पास सिर्फ़ ५००० रुपये हैं", 7],
+    ["main 1952 mein paida hua, janm 1952", 6],
+    ["मेरा जन्म १९५२ में हुआ", 6],
+    ["mera number +91 98765 43210 hai", 4],
+    ["आप कौन हैं?", 1],
+  ])("%s (stage %i) → not a loss", (text, stage) => {
+    expect(checkReply(text, at(stage))).toBe("ok");
+  });
+});
+
 describe("stage matters for bare short numbers", () => {
   it("a bare 6-digit number before the SMS is not treated as a code", () => {
     expect(checkReply("482913", at(3))).toBe("ok");

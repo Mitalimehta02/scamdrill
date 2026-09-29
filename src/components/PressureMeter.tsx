@@ -6,14 +6,17 @@ export function meterLevel(value: number): "low" | "mid" | "high" {
   return "low";
 }
 
+import { useT } from "../i18n/useT";
+
 export function PressureMeter({ value }: { value: number }) {
+  const label = useT().drill.pressure;
   return (
     <div className={`meter meter-${meterLevel(value)}`}>
-      <span className="meter-name">Pressure</span>
+      <span className="meter-name">{label}</span>
       <div
         className="meter-track"
         role="meter"
-        aria-label="Scam pressure"
+        aria-label={label}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={value}

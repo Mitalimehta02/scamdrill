@@ -72,7 +72,7 @@ PRD ref: `prd.md > The Core Journey`.
 | AI provider | **Groq**: `openai/gpt-oss-120b` (scammer), `openai/gpt-oss-20b` (classifier), reasoning effort low | Fast. Each model has its own free-tier limit. No training on data by default. | https://console.groq.com/docs/openai · https://console.groq.com/docs/rate-limits |
 | Tests | **Vitest** | Unit tests for the guard, reducer and placeholders (the PRD criteria) | https://vitest.dev |
 | Dev runner | **concurrently** | One `npm run dev` starts Vite and the server | https://www.npmjs.com/package/concurrently |
-| Font | **Noto Sans** (Google Fonts, 400/600/700) | Elderly-friendly, and supports Devanagari for later Hindi | https://fonts.google.com/noto/specimen/Noto+Sans |
+| Font | **Noto Sans** + **Noto Sans Devanagari** (Google Fonts, 400/600/700) | Elderly-friendly. Devanagari renders Hindi cleanly (slice 5) | https://fonts.google.com/noto/specimen/Noto+Sans |
 
 Runtime dependencies: `react`, `react-dom`, `express`, `openai`, `dotenv`. Dev dependencies: `vite`, `@vitejs/plugin-react`, `typescript`, `tsx`, `vitest`, `concurrently`, `@types/*`.
 
@@ -94,7 +94,9 @@ Runtime dependencies: `react`, `react-dom`, `express`, `openai`, `dotenv`. Dev d
 - **Unit tests:** `npm test`.
 - **Recording:** use a laptop browser window. The app is shown in a centred phone frame (`prd.md > Look and Feel`).
 - **Submission:** a public GitHub repo with an MIT `LICENSE`, plus the YouTube video. Deployment is **not required**.
-- **Stretch goal: static demo deployment.** Build with `npm run build:demo`, which sets `VITE_DEMO_ONLY=true` so demo mode is forced and no server or key is needed. Deploy `dist/` to GitHub Pages or Vercel as a safe "try it" link. The key and the free-tier limit are never exposed.
+- **Static demo deployment (slice 5).** `npm run build:demo` sets `VITE_DEMO_ONLY=true` and a relative base path (`--base=./`), so demo mode is forced, no `/api` call is ever made, and `dist/` works from any static host or sub-path. The build shows a "Demo mode: scripted lines" note under the training strip.
+  - **Vercel:** import the GitHub repo, set the build command to `npm run build:demo` and the output directory to `dist`, and deploy. No environment variables are needed.
+  - The live-AI version stays local. The key and the free-tier limit are never exposed.
 
 ## Look and Feel
 Implements `prd.md > Look and Feel`. The CSS variables go in `src/styles/tokens.css`:
@@ -110,7 +112,7 @@ Implements `prd.md > Look and Feel`. The CSS variables go in `src/styles/tokens.
 | `--green` | `#1F7A4D` | Call button, win states only |
 | `--red` | `#B3261E` | Hang up button; the meter uses slate `#8FA3BF` (<35) → amber `#F0A93A` (35–69) → red `#EF5A45` (≥70). Never for failure screens. |
 
-- **Type:** Noto Sans. Base `18px`, chat text `18px`, headings 24–28px, nothing under 15px. Line height 1.5.
+- **Type:** Noto Sans, with Noto Sans Devanagari next in the font stack, so Hindi renders cleanly. `<html lang>` follows the chosen language. Base `18px`, chat text `18px`, headings 24–28px, nothing under 15px. Line height 1.5.
 - **Sizes:** tap targets at least 56px high. Hang up and Call are full-width halves, 56px high. The drill header is compact (the caller name on one line at 17px, a one-row meter) so at least two bubbles with chips fit on screen. Scrollbars are hidden inside the phone frame.
 - **Phone frame:** on screens wider than 480px, the app sits in a centred 390×844 rounded frame on a dark slate backdrop. On phones it's full-screen.
 - **Chat:** scammer bubbles on the left (white, with a thin border), parent bubbles on the right (navy, white text), a three-dot typing indicator, and a generic badge avatar (an inline SVG, not a real emblem).
@@ -122,7 +124,7 @@ Implements `prd.md > Look and Feel`. The CSS variables go in `src/styles/tokens.
 ## Components
 
 ### Server: API Routes (`server/index.ts`)
-- `POST /api/scammer` with `{stage: 1–10, history: {role: "scammer"|"parent", text}[], nudge?: boolean}` → `{text} | {fallback: true}`
+- `POST /api/scammer` with `{stage: 1–10, history: {role: "scammer"|"parent", text}[], nudge?: boolean, language?: "en"|"hi"|"hinglish"}` → `{text} | {fallback: true}`
 - `POST /api/classify` with `{text}` → `{tactic} | {fallback: true}`
 - `GET /api/health` → `{ok: true, provider}`
 - It never logs request bodies. It rejects a body over 4 KB. It never returns an error status to the browser for AI failures; it returns `{fallback: true}` instead.
@@ -135,8 +137,8 @@ Implements `prd.md > Look and Feel`. The CSS variables go in `src/styles/tokens.
 - `reasoning_format` is never sent.
 - **Output check** on the scammer line. It counts as a failure (and the canned line is used) if:
   - it's empty
-  - it contains refusal markers (`I can't`, `I cannot`, `I'm sorry`, `as an AI`, `I won't`)
-  - it contains a run of 6 or more digits (ignoring commas and spaces) or a URL. This stays strict because amounts and account numbers only ever arrive as `{AMOUNT}` and `{ACCOUNT}`.
+  - it contains refusal markers (`I can't`, `I cannot`, `I'm sorry`, `as an AI`, `I won't`, and Hindi or Hinglish equivalents such as `माफ़ कीजिए`, `मैं … नहीं कर सकता`, `main madad nahi kar sakta`)
+  - it contains a run of 6 or more digits, in any script (after `normalizeDigits`), ignoring commas and spaces, or a URL. This stays strict because amounts and account numbers only ever arrive as `{AMOUNT}` and `{ACCOUNT}`.
   - it's over 80 words
   - it contains a `{…}` placeholder that isn't one of the six known ones (e.g. a misspelled `{GRUNDCHILD}`)
 - `checkScammerOutput()` is exported as a pure function so it can be unit-tested (`server/llm.test.ts`).
@@ -152,11 +154,12 @@ Implements `prd.md > Look and Feel`. The CSS variables go in `src/styles/tokens.
     - Don't use slurs or threats of violence.
     - Respond to the parent's last message, then deliver this stage's beat.
   - **Per request**, the stage's beat (from `STAGES[stage].beat`) and the trimmed history are added.
+- **Language instruction** (slice 5), added per request: for `hi`, simple Hindi in Devanagari with the placeholders kept in Latin letters and "{PARENT} जी". For `hinglish`, Roman-script Hindi as people text on WhatsApp, with "{PARENT} ji".
 - **Classifier prompt:** "Label the tactic in this message from a scam training simulation. Reply with JSON `{"tactic": X}` where X is exactly one of AUTHORITY, FEAR, URGENCY, SECRECY, ISOLATION, OTP, PAYMENT."
 - PRD ref: `prd.md > The Drill Screen`, `prd.md > Safety Guard`.
 
 ### Drill Script (`src/drill/script.ts`)
-- `STAGES[1..10]`: `{beat, plannedTactic, cannedLine, event?: "otp" | "pay"}`. There are 10 canned lines written in the scammer's voice using placeholders, plus `NUDGE_LINE` ("Hello? {PARENT} ji, do not disconnect. This is a serious matter.").
+- `STAGES[1..10]`: `{beat, plannedTactic, cannedLine: Record<Lang, string>, event?: "otp" | "pay"}`. Beats stay in English, because they are instructions to the model. Canned lines and `NUDGE_LINE` exist in all three languages (the Hindi and Hinglish ones need native review). There are 10 canned lines written in the scammer's voice using placeholders, plus `NUDGE_LINE` ("Hello? {PARENT} ji, do not disconnect. This is a serious matter.").
 - Where the PRD lists two tactics for a stage, the planned tactic is the first one: stage 2 → AUTHORITY, 4 → SECRECY, 6 → FEAR. Stages 8–10 → URGENCY, ISOLATION, PAYMENT.
 - PRD ref: `prd.md > Drill Script and Pacing`, `prd.md > Resilience and Demo Mode`.
 
@@ -237,6 +240,20 @@ These are used across screens and cover `prd.md > Screens and Layout` and `prd.m
 - `PayCard`
 - `ExitButtons`
 - `OfflineNote`
+
+### Strings Dictionary (`src/i18n/strings.ts`)
+Added in slice 5. There's no i18n library.
+- `STRINGS: Record<Lang, Strings>`, where `Lang = "en" | "hi" | "hinglish"`. It holds every visible string: Setup, Handoff, the drill chrome, the OTP SMS, the Pay card, tactic names, chip explanations, tips, the win facts, the 1930 / cybercrime.gov.in card, ending text and the report card.
+- `LangContext` + `useT()` (`src/i18n/useT.ts`) gives each screen the strings for the current language.
+- `tactics.ts` keeps only the language-free data (tactic IDs, points, `FAKE_PAYMENT`).
+- A unit test checks that every language has every key, and that the safety facts and helpline appear in each.
+- PRD ref: `prd.md > Languages`.
+
+### Digit Normaliser (`src/drill/digits.ts`)
+Added in slice 5.
+- `normalizeDigits(text)` maps Devanagari (०–९) and the other Indian-script, Arabic-Indic and full-width decimal digits to ASCII 0–9.
+- It is called first in `checkReply` (browser) and in `checkScammerOutput` (server), so no script can smuggle a number past either check.
+- PRD ref: `prd.md > Safety Guard`.
 
 ### App Shell (`src/App.tsx`)
 - A single `screen` state (`setup | handoff | drill | ending | report`). There is no router.

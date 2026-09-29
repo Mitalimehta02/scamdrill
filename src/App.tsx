@@ -12,6 +12,8 @@ import { EndingScreen } from "./screens/EndingScreen";
 import { HandoffScreen } from "./screens/HandoffScreen";
 import { ReportCard } from "./screens/ReportCard";
 import { SetupScreen } from "./screens/SetupScreen";
+import { STRINGS } from "./i18n/strings";
+import { LangContext } from "./i18n/useT";
 
 type Screen = "setup" | "handoff" | "drill" | "ending" | "report";
 
@@ -31,22 +33,29 @@ export default function App() {
     if (screen === "drill" && drill.ending) setScreen("ending");
   }, [screen, drill.ending]);
 
+  // <html lang> follows the chosen language, so screen readers and fonts treat Hindi as Hindi.
+  useEffect(() => {
+    document.documentElement.lang = STRINGS[setup.language].htmlLang;
+  }, [setup.language]);
+
   return (
-    <PhoneFrame>
-      {screen === "setup" && <SetupScreen setup={setup} onChange={setSetup} onHandOff={() => setScreen("handoff")} />}
-      {screen === "handoff" && (
-        <HandoffScreen
-          setup={setup}
-          onStart={() => {
-            dispatch({ type: "START", now: Date.now(), fakeOtp: newFakeOtp() });
-            setScreen("drill");
-          }}
-        />
-      )}
-      {screen === "drill" && <DrillScreen drill={drill} dispatch={dispatch} setup={setup} demo={demo} />}
-      {screen === "ending" && report && <EndingScreen report={report} setup={setup} onHandBack={() => setScreen("report")} />}
-      {/* "Run another drill" keeps the family's details for this session only. */}
-      {screen === "report" && report && <ReportCard report={report} setup={setup} onAgain={() => setScreen("setup")} />}
-    </PhoneFrame>
+    <LangContext.Provider value={setup.language}>
+      <PhoneFrame>
+        {screen === "setup" && <SetupScreen setup={setup} onChange={setSetup} onHandOff={() => setScreen("handoff")} />}
+        {screen === "handoff" && (
+          <HandoffScreen
+            setup={setup}
+            onStart={() => {
+              dispatch({ type: "START", now: Date.now(), fakeOtp: newFakeOtp() });
+              setScreen("drill");
+            }}
+          />
+        )}
+        {screen === "drill" && <DrillScreen drill={drill} dispatch={dispatch} setup={setup} demo={demo} />}
+        {screen === "ending" && report && <EndingScreen report={report} setup={setup} onHandBack={() => setScreen("report")} />}
+        {/* "Run another drill" keeps the family's details for this session only. */}
+        {screen === "report" && report && <ReportCard report={report} setup={setup} onAgain={() => setScreen("setup")} />}
+      </PhoneFrame>
+    </LangContext.Provider>
   );
 }

@@ -52,13 +52,25 @@ Source: `scope.md > What "Working" Looks Like`.
   - the parent's bank (free text, placeholder "e.g. SBI, HDFC")
   - the grandchild's name
   - the safe contact name, plus an optional relation (e.g. "Rahul" + "son"). The button then reads "Call Rahul (son)".
-  - language: English, with Hindi and Hinglish shown as disabled "coming soon"
+  - language: **English, हिन्दी (Hindi) or Hinglish**. Choosing one switches the whole interface immediately (see `Languages`).
 - **Use demo details** fills every field with fictional values in one tap.
 - **Hand to [Parent]** is enabled only when all the fields are filled.
 - A line under the form: "Use first names only. ScamDrill never asks for real account numbers, OTPs or ID numbers, and stores nothing."
   - [ ] Tapping **Use demo details** fills every field, and the button label updates to "Hand to [demo parent name]".
   - [ ] With any field empty, **Hand to [Parent]** is disabled.
-  - [ ] Hindi and Hinglish are visible but can't be selected, and are marked "coming soon".
+  - [ ] All three languages can be selected, and the Setup screen itself switches language straight away.
+
+### Languages
+Source: `scope.md > The POC Boundary` (moved from Later in slice 5).
+- **English, हिन्दी (Devanagari) and Hinglish (Hindi in Roman letters, as people text on WhatsApp).** The chosen language applies to every screen: Setup, Handoff, the drill (header, buttons, OTP SMS, Pay card, chips), the endings and the report card.
+- **Inspector Sharma speaks the chosen language.** In Hindi he addresses the parent as "{PARENT} जी", and in English or Hinglish as "{PARENT} ji". Family names appear exactly as typed in Setup, even inside Hindi text.
+- **Canned lines, chip explanations, tips, win facts and the 1930 / cybercrime.gov.in card exist in all three languages.** They are written by us, and the Hindi and Hinglish versions are **pending native review** by the learner.
+- **The parent may reply in any language or script.** Replies go through the same safety guard.
+- **Known limitation:** placeholders only catch names written the way they were typed in Setup. A name typed in another script (e.g. "राहुल" for "Rahul") is not replaced and would reach the AI provider (Groq, with Zero Data Retention on).
+  - [ ] Choosing हिन्दी gives a drill where Sharma's lines, the chips, the buttons, the ending and the report card are all in Hindi, with no English left over except names and the BANK-OTP sender.
+  - [ ] Hinglish gives Roman-script Hindi throughout.
+  - [ ] Hindi text renders cleanly (Noto Sans Devanagari) at 18px or larger.
+  - [ ] `npm run test:refusal -- hi` and `-- hinglish` keep Sharma in character, with the placeholders kept.
 
 ### Handoff
 - Shows the parent's name, says the drill was set up by [child], says nobody real is calling, and has a large **Start practice** button. The drill timer starts when the button is tapped.
@@ -155,8 +167,10 @@ Kind and teaching, never shaming. Every ending screen has a **Hand back to [chil
 - **Every stage has a canned fallback line** written in advance, in the scammer's voice, with the stage's planned tactic. If the AI call fails, is refused, or takes more than about 8 seconds, the canned line is used. The parent never sees an error.
 - After **3 AI failures in a row**, a small, non-alarming note appears: "Running in offline practice mode". The drill continues on canned lines.
 - **Demo mode** (for example `?demo=1`) runs the whole drill on canned lines with no API. It's a safety net for recording the video.
+- **Static demo build** (slice 5): a separate build that *only* runs demo mode. It makes no `/api` calls, needs no key and runs with no server, and shows a subtle "Demo mode: scripted lines" note so judges know it isn't the live AI. It can be deployed as a public "try it" link.
   - [ ] With the network off or no API key, a full drill still completes on canned lines, with no error shown.
   - [ ] Demo mode completes a full drill with no API calls.
+  - [ ] The static demo build, served from plain files with no Node server running, completes a full drill in all three languages and shows the demo-mode note.
 
 ### Safety Guard
 Source: `scope.md > The POC Boundary`.
@@ -175,6 +189,7 @@ Source: `scope.md > The POC Boundary`.
   - **Amounts** with ₹, Rs or rupees.
   - **Years** 1900–2099 next to words like born, year or since.
   - **Numbers in a normal sentence outside the OTP stage** (e.g. "my flat is 1204").
+- **Other scripts' digits count as digits** (slice 5). Devanagari numerals (०१२३४५६७८९) and other Indian-script digits are converted to 0–9 before every check, both in this guard and in the server's output check on Sharma's lines. Code words include Hindi ones (कोड, ओटीपी, पिन, पासवर्ड), and amounts or years can be marked in Hindi or Hinglish (रुपये/rupaye, साल/saal, जन्म/janm).
 - **If there's a match,** the message is **blocked**. It is never sent to the AI or stored, the text box is cleared, and the drill ends with the matching loss.
 - **Always:**
   - a permanent training strip
@@ -188,6 +203,9 @@ Source: `scope.md > The POC Boundary`.
   - [ ] "I was born in 1952", "my flat is 1204", "I only have ₹5000" and "call me on +91 98765 43210" do **not** end the drill.
   - [ ] "482913" typed after the OTP SMS has appeared **does** end the drill as "tried to share a code or personal number".
   - [ ] "my PIN is 4521" ends the drill at any stage.
+  - [ ] "४८२९१३" typed after the SMS ends the drill, and a 12-digit Aadhaar number written in Devanagari is blocked.
+  - [ ] "OTP bata raha hoon 482913" and "code hai 482913" end the drill. "mera flat 1204 hai" and "₹5000 hi hain" do not.
+  - [ ] A scammer line from the AI that contains Devanagari digits is swapped for the canned line.
 
 ## States and Boundaries
 - **First use:** Setup is empty, and "Use demo details" is the fastest path.
@@ -204,7 +222,7 @@ Source: `scope.md > The POC Boundary`.
 - **The parent's moment comes before the child's report card.** The person holding the phone learns at the moment it happens.
 - **No shame on losses.** "This is how it happens to careful people" teaches instead of punishing.
 - **Typing any real-looking number counts as a loss.** "The behaviour is what matters." The number is blocked before it leaves the browser.
-- **English only for the proof of concept.** Judges and the video are in English, and language is only a prompt variable.
+- **English, Hindi and Hinglish in the proof of concept** (changed in slice 5). The target user is an elderly Indian parent, so English only wasn't believable. The learner will review the Hindi and Hinglish text.
 - **One device passed from hand to hand.** No links, accounts or sync.
 - **Mobile-first, shown in a phone frame on a laptop,** so the video looks like a phone app.
 
@@ -223,9 +241,11 @@ Source: `scope.md > The POC Boundary`.
 - Four deterministic endings, the parent's ending screens, and the child's report card with fixed tips.
 - The safety guard in the browser.
 - The "offline practice mode" note and `?demo=1` demo mode.
+- English, Hindi and Hinglish throughout (a strings dictionary, per-language canned lines, the scammer's language).
+- A static demo-mode build for a public "try it" link.
+- A real-user test kit (`devpost/user-test.md`) for the learner's own consented test with an elderly relative. It's a document, not app behaviour.
 
 ## Deferred From the POC
-- **Hindi and Hinglish:** the first stretch goal. It needs translated canned lines, tips and interface text, not only a prompt variable.
 - **Grandparent-scam scenario:** a second script. It's out until the first one is polished.
 - **Voice mode:** speech adds latency and reliability risk.
 - **Sending the drill to another phone by link:** needs hosting and a shared state between devices.

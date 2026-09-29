@@ -48,6 +48,8 @@ pre{background:var(--chip);border-radius:8px;padding:12px;overflow:auto;font-siz
 <p class="lede">How it's built: a React app does the refereeing, and a small server keeps the key and asks two models.</p>
 <span class="status" style="background:var(--ok-soft);color:var(--ok)">SPEC APPROVED</span>
 
+<div class="card" style="border-left:4px solid var(--amber)"><strong>Slice 5 update:</strong> <code>src/i18n/strings.ts</code> (every string in 3 languages), <code>src/drill/digits.ts</code> (any-script digits → 0–9 before both safety checks), a <code>language</code> field on <code>/api/scammer</code> plus a per-language prompt line, <code>checkBeat</code> (no money before stage 7; required placeholders per stage), a 12 kB body limit for Hindi, and <code>build:demo --base=./</code>. See spec.md.</div>
+
 <h2>Architecture: step through one scammer turn</h2>
 <div class="card">
 <svg viewBox="0 0 860 330" role="img" aria-label="Browser app with drill engine, guard, placeholders and API client; Express server with scammer and classify routes; Groq models">

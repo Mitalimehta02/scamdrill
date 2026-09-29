@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { formatDuration } from "../drill/format";
+import { useT } from "../i18n/useT";
 
 /** "● On call 02:14" — ticks while the drill runs; the same start time feeds the report card. */
 export function CallTimer({ startedAt, endedAt }: { startedAt: number; endedAt?: number }) {
+  const t = useT().drill;
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     if (endedAt) return;
@@ -10,9 +12,9 @@ export function CallTimer({ startedAt, endedAt }: { startedAt: number; endedAt?:
     return () => clearInterval(t);
   }, [endedAt]);
   return (
-    <div className="call-timer" aria-label="Time on the call">
+    <div className="call-timer" aria-label={t.onCall}>
       <span className="call-dot" aria-hidden="true" />
-      On call {formatDuration((endedAt ?? now) - startedAt)}
+      {t.onCall} {formatDuration((endedAt ?? now) - startedAt)}
     </div>
   );
 }

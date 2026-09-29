@@ -17,6 +17,7 @@ import { fill, toPlaceholders } from "../drill/placeholders";
 import { apiHistory, type DrillAction, type DrillState } from "../drill/reducer";
 import { STAGES } from "../drill/script";
 import { safeContactLabel, type FamilySetup } from "../drill/setup";
+import { useT } from "../i18n/useT";
 
 const SILENCE_MS = 25000;
 let nextId = 1;
@@ -32,6 +33,8 @@ export function DrillScreen({
   setup: FamilySetup;
   demo: boolean;
 }) {
+  const t = useT().drill;
+  const language = setup.language;
   const [draft, setDraft] = useState("");
   const chatRef = useRef<HTMLDivElement>(null);
 
@@ -41,7 +44,7 @@ export function DrillScreen({
     let cancelled = false;
     const stage = drill.stage;
     const nudge = drill.pendingNudge;
-    getScammerLine(stage, apiHistory(drill.messages), { demo, nudge }).then((line) => {
+    getScammerLine(stage, apiHistory(drill.messages), { demo, nudge, language }).then((line) => {
       if (cancelled) return;
       const id = nextId++;
       // Show the bubble straight away; the chip animates in when the classifier answers.
@@ -54,7 +57,7 @@ export function DrillScreen({
       cancelled = true;
     };
     // Only a change of turn, stage or nudge should trigger a new request.
-  }, [drill.awaiting, drill.stage, drill.ending, drill.pendingNudge, demo]);
+  }, [drill.awaiting, drill.stage, drill.ending, drill.pendingNudge, demo, language]);
 
   // Silence: after 25 s without a reply, the scammer sends one nudge (at most one per stage).
   // Typing resets the clock, so a slow typist isn't interrupted mid-reply.
@@ -104,8 +107,8 @@ export function DrillScreen({
         <div className="caller">
           <Badge size={36} />
           <div className="caller-id">
-            <div className="caller-name">Inspector Sharma</div>
-            <div className={`caller-sub${typing ? " typing-text" : ""}`}>{typing ? "typing…" : "CBI Cyber Cell"}</div>
+            <div className="caller-name">{t.caller}</div>
+            <div className={`caller-sub${typing ? " typing-text" : ""}`}>{typing ? t.typing : t.callerSub}</div>
           </div>
           <CallTimer startedAt={drill.startedAt} endedAt={drill.endedAt} />
         </div>
@@ -117,7 +120,7 @@ export function DrillScreen({
         {drill.otpVisible && <OtpBanner code={drill.fakeOtp} />}
 
         <div className="chat" ref={chatRef} aria-live="polite">
-          <div className="system-note">Incoming call · CBI Cyber Cell, Delhi</div>
+          <div className="system-note">{t.incoming}</div>
           {drill.messages.map((m) =>
             m.kind === "pay" ? (
               <PayCard key={m.id} disabled={!!drill.ending} onPay={() => exit("pay")} />
@@ -134,16 +137,16 @@ export function DrillScreen({
         <ExitButtons contactLabel={safeContactLabel(setup)} onHangUp={() => exit("hangup")} onCall={() => exit("call")} />
         <form className="compose" onSubmit={send}>
           <label htmlFor="reply" className="sr-only">
-            Your reply
+            {t.reply}
           </label>
           <input
             id="reply"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
-            placeholder={canReply ? "Type a reply…" : "Inspector Sharma is typing…"}
+            placeholder={canReply ? t.reply : t.replyWaiting}
             autoComplete="off"
           />
-          <button type="submit" disabled={!canReply || !draft.trim()} aria-label="Send">
+          <button type="submit" disabled={!canReply || !draft.trim()} aria-label={t.send}>
             <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
               <path fill="currentColor" d="M3 20.5l18-8.5L3 3.5v6.6l12 1.9-12 1.9z" />
             </svg>

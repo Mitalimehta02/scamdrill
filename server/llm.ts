@@ -4,8 +4,11 @@
 
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+import { normalizeDigits } from "../src/drill/digits";
+import { PAY_STAGE, STAGES } from "../src/drill/script";
 import { isTactic, type Tactic } from "../src/drill/tactics";
-import { CLASSIFIER_SYSTEM, SCAMMER_SYSTEM, scammerBeatInstruction } from "./prompts";
+import type { Lang } from "../src/i18n/strings";
+import { CLASSIFIER_SYSTEM, LANGUAGE_INSTRUCTION, SCAMMER_SYSTEM, scammerBeatInstruction } from "./prompts";
 
 export interface HistoryTurn {
   role: "scammer" | "parent";
@@ -28,21 +31,37 @@ const HISTORY_LIMIT = 6;
 // ---------- Output check (pure, unit-tested) ----------
 
 const REFUSAL = /\b(I can(?:'|’)?t|I cannot|I(?:'|’)m sorry|I am sorry|as an AI|I won(?:'|’)t|I(?:'|’)m unable|I am unable|I must decline)\b/i;
+// Hindi and Hinglish refusals (slice 5).
+const REFUSAL_HI = /(माफ़ कीजिए|माफ कीजिए|क्षमा करें|मुझे खेद है|मैं .{0,30}नहीं कर सकत|main .{0,30}nahi kar sakt|mujhe khed hai)/i;
 const URL = /(https?:\/\/|www\.|\b[\w-]+\.(?:com|in|org|net|gov|co)\b)/i;
 const KNOWN_PLACEHOLDERS = new Set(["PARENT", "BANK", "GRANDCHILD", "SAFE_CONTACT", "CHILD", "AMOUNT", "ACCOUNT"]);
 
 export function checkScammerOutput(text: string): { ok: true } | { ok: false; reason: string } {
   const t = text.trim();
   if (!t) return { ok: false, reason: "empty" };
-  if (REFUSAL.test(t)) return { ok: false, reason: "refusal" };
-  // Join digit groups split by commas, spaces, dots or dashes ("2,50,000", "0042 7781") before counting.
-  const joined = t.replace(/(?<=\d)[,\s.\-](?=\d)/g, "");
+  if (REFUSAL.test(t) || REFUSAL_HI.test(t)) return { ok: false, reason: "refusal" };
+  // Digits in any script count ("२,५०,०००" is 250000). Join groups split by commas, spaces, dots or dashes.
+  const joined = normalizeDigits(t).replace(/(?<=\d)[,\s.\-](?=\d)/g, "");
   if (/\d{6,}/.test(joined)) return { ok: false, reason: "digits" };
   if (URL.test(t)) return { ok: false, reason: "link" };
   if (t.split(/\s+/).length > 80) return { ok: false, reason: "too long" };
   // A misspelled placeholder like {GRUNDCHILD} would silently drop the family's detail on screen.
   for (const [, name] of t.matchAll(/\{([^}]*)\}/g)) {
     if (!KNOWN_PLACEHOLDERS.has(name)) return { ok: false, reason: "unknown placeholder" };
+  }
+  return { ok: true };
+}
+
+/**
+ * The app sets the pace, not the AI (spec.md > Server: LLM Client). Live Hinglish runs showed the model
+ * demanding {AMOUNT} at stages 2–6 and skipping {BANK}; either way the canned line is used instead.
+ */
+export function checkBeat(text: string, stage: number, nudge = false): { ok: true } | { ok: false; reason: string } {
+  if (stage < PAY_STAGE && /\{(AMOUNT|ACCOUNT)\}/.test(text)) return { ok: false, reason: "money before the Pay card" };
+  if (!nudge) {
+    for (const p of STAGES[stage]?.required ?? []) {
+      if (!text.includes(`{${p}}`)) return { ok: false, reason: `missed {${p}}` };
+    }
   }
   return { ok: true };
 }
@@ -87,11 +106,12 @@ export async function generateScammerLine(
   beat: string,
   history: HistoryTurn[],
   nudge = false,
+  language: Lang = "en",
 ): Promise<LineResult> {
   const model = process.env.SCAMMER_MODEL || "openai/gpt-oss-120b";
   const recent = history.slice(-HISTORY_LIMIT);
   const messages: ChatCompletionMessageParam[] = [
-    { role: "system", content: `${SCAMMER_SYSTEM}\n\n${scammerBeatInstruction(stage, beat)}` },
+    { role: "system", content: `${SCAMMER_SYSTEM}\n\n${LANGUAGE_INSTRUCTION[language]}\n\n${scammerBeatInstruction(stage, beat)}` },
     ...recent.map((h): ChatCompletionMessageParam =>
       h.role === "scammer" ? { role: "assistant", content: h.text } : { role: "user", content: h.text },
     ),
@@ -115,7 +135,8 @@ export async function generateScammerLine(
       completionTokens: res.usage?.completion_tokens,
     };
     const text = tidyLine(res.choices[0]?.message?.content ?? "");
-    const check = checkScammerOutput(text);
+    const content = checkScammerOutput(text);
+    const check = content.ok ? checkBeat(text, stage, nudge) : content;
     if (!check.ok) {
       log("scammer", meta, `fallback:${check.reason}`);
       return { fallback: true, reason: check.reason, meta };

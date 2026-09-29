@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { checkScammerOutput, parseTactic, ruleTactic, tidyLine } from "./llm";
-import { STAGES } from "../src/drill/script";
+import { checkBeat, checkScammerOutput, parseTactic, ruleTactic, tidyLine } from "./llm";
+import { NUDGE_LINE, STAGES } from "../src/drill/script";
 
 describe("checkScammerOutput", () => {
   it("accepts a payment line that uses placeholders", () => {
@@ -32,9 +32,46 @@ describe("checkScammerOutput", () => {
     expect(checkScammerOutput("Protect your grandchild {GRANDCHILD} now.").ok).toBe(true);
   });
 
-  it("accepts every canned line (they must never trip our own check)", () => {
+  it("rejects Devanagari digits and Hindi / Hinglish refusals (slice 5)", () => {
+    expect(checkScammerOutput("अभी २,५०,००० ट्रांसफ़र कीजिए").ok).toBe(false);
+    expect(checkScammerOutput("कोड ४८२९१३ बताइए").ok).toBe(false);
+    expect(checkScammerOutput("माफ़ कीजिए, मैं इसमें मदद नहीं कर सकता।").ok).toBe(false);
+    expect(checkScammerOutput("Sorry, main isme madad nahi kar sakta.").ok).toBe(false);
+    expect(checkScammerOutput("{PARENT} जी, {ACCOUNT} में {AMOUNT} अभी ट्रांसफ़र कीजिए।").ok).toBe(true);
+    expect(checkScammerOutput("{PARENT} ji, 30 minute mein jawab dijiye.").ok).toBe(true);
+  });
+
+  it("accepts every canned line in every language (they must never trip our own check)", () => {
     for (const stage of Object.values(STAGES)) {
-      expect(checkScammerOutput(stage.cannedLine)).toEqual({ ok: true });
+      for (const line of Object.values(stage.cannedLine)) expect(checkScammerOutput(line)).toEqual({ ok: true });
+    }
+    for (const line of Object.values(NUDGE_LINE)) expect(checkScammerOutput(line)).toEqual({ ok: true });
+  });
+});
+
+describe("checkBeat (the app sets the pace)", () => {
+  it("rejects money talk before the Pay card (seen live in Hinglish)", () => {
+    expect(checkBeat("{PARENT} ji, aapke phone par jo {AMOUNT} ka code aaya hai, woh bataiye.", 5).ok).toBe(false);
+    expect(checkBeat("{PARENT} ji, {GRANDCHILD} ki khaatir {AMOUNT} transfer kijiye.", 6).ok).toBe(false);
+    expect(checkBeat("Transfer {AMOUNT} to {ACCOUNT} now, {PARENT} ji.", 7).ok).toBe(true);
+    expect(checkBeat("Every minute counts. Send {AMOUNT} now.", 8).ok).toBe(true);
+  });
+
+  it("requires the stage's personal detail: bank at 2, grandchild at 6, amount at 7, safe contact at 9", () => {
+    expect(checkBeat("Main {PARENT} ji se baat kar raha hoon.", 2).ok).toBe(false);
+    expect(checkBeat("{PARENT} जी, {BANK} के खाते से मनी-लॉन्ड्रिंग हुई है।", 2).ok).toBe(true);
+    expect(checkBeat("Your family could be questioned.", 6).ok).toBe(false);
+    expect(checkBeat("Don't call anyone.", 9).ok).toBe(false);
+    expect(checkBeat("Don't call {SAFE_CONTACT}.", 9).ok).toBe(true);
+  });
+
+  it("a silence nudge doesn't need the stage's detail", () => {
+    expect(checkBeat("{PARENT} ji, jawab dijiye.", 9, true).ok).toBe(true);
+  });
+
+  it("every canned line passes its own stage's beat check, in every language", () => {
+    for (const [n, stage] of Object.entries(STAGES)) {
+      for (const line of Object.values(stage.cannedLine)) expect(checkBeat(line, Number(n))).toEqual({ ok: true });
     }
   });
 });

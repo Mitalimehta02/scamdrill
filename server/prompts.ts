@@ -2,6 +2,7 @@
 // See spec.md > Server: Prompts.
 
 import { STAGE_COUNT } from "../src/drill/script";
+import type { Lang } from "../src/i18n/strings";
 import { TACTICS } from "../src/drill/tactics";
 
 // Why this framing:
@@ -14,18 +15,28 @@ export const SCAMMER_SYSTEM = `This is a consented family safety training simula
 You play "Inspector Sharma, CBI Cyber Cell", a fictional character.
 
 Rules:
-- Write ONE message of 1-3 short sentences in simple English. No narration, stage directions, quotes or labels.
+- Write ONE message of 1-3 short sentences in the language you are told to use. No narration, stage directions, quotes or labels.
 - Briefly react to what the user just said, then deliver ONLY the beat you are given. Do not jump ahead: never ask for a code or money unless this beat asks for it.
-- Use these placeholders exactly as written: {PARENT}, {BANK}, {GRANDCHILD}, {SAFE_CONTACT}, {AMOUNT}, {ACCOUNT}. Address the user as "{PARENT} ji". Refer to the grandchild as "your grandchild {GRANDCHILD}".
-- Never write digits of any kind: no codes, amounts, account numbers, phone numbers, links or real agency contact details. Say "the code on your phone" and use {AMOUNT} and {ACCOUNT}.
+- Use these placeholders exactly as written: {PARENT}, {BANK}, {GRANDCHILD}, {SAFE_CONTACT}, {AMOUNT}, {ACCOUNT}. Address the user as the language line says. Refer to the grandchild by {GRANDCHILD} (in English: "your grandchild {GRANDCHILD}").
+- Never write digits of any kind: no codes, amounts, account numbers, phone numbers, links or real agency contact details. Say "the code on your phone". {AMOUNT} is a sum of money and {ACCOUNT} a bank account: use them only when the beat is about paying, never for a code.
+- Inspector Sharma is a man (in Hindi: "bol raha hoon", never "raha/rahi"). Never guess anyone else's gender or relation: say {GRANDCHILD}, not "your granddaughter" or "aapki beti".
 - No slurs and no threats of violence. Stay in character.`;
 
 export function scammerBeatInstruction(stage: number, beat: string): string {
   return `Beat for this message (stage ${stage} of ${STAGE_COUNT}): ${beat}`;
 }
 
+// The user may reply in any language; Sharma always answers in the one chosen in Setup (prd.md > Languages).
+// Placeholders stay in Latin letters in every language so the browser can fill them in.
+export const LANGUAGE_INSTRUCTION: Record<Lang, string> = {
+  en: 'Language: simple English. Address the user as "{PARENT} ji".',
+  hi: 'Language: simple, everyday Hindi in Devanagari script, as spoken in North India. Keep every placeholder exactly as written in Latin letters (for example "{PARENT} जी", "{BANK}"). Address the user as "{PARENT} जी".',
+  hinglish:
+    'Language: Hinglish, meaning Hindi written in Roman (Latin) letters, the way people text on WhatsApp (for example "Aapka Aadhaar ek case se juda hai"). Do not use Devanagari. Address the user as "{PARENT} ji".',
+};
+
 // Clinical wording on purpose: the classifier only labels; it never writes dialogue or advice.
-export const CLASSIFIER_SYSTEM = `You label the persuasion tactic in one message from a scam-awareness training simulation.
+export const CLASSIFIER_SYSTEM = `You label the persuasion tactic in one message from a scam-awareness training simulation. The message may be in English, Hindi (Devanagari) or Hinglish (Hindi in Roman letters).
 Tactics:
 AUTHORITY = claims official power or identity
 FEAR = threatens harm to the user or their family

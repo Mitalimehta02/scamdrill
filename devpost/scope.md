@@ -50,21 +50,22 @@ A stranger can go from setup to the drill to the report card, win or lose, with 
 - Details go in the PRD and spec.
 
 ## The POC Boundary
-- One scenario (digital arrest), English only, text chat, one device passed between the child and the parent.
+- One scenario (digital arrest), text chat, one device passed between the child and the parent.
+- **Three languages: English, हिन्दी (Hindi) and Hinglish (Hindi in Roman letters).** The scammer, the canned lines and all interface text follow the language chosen in Setup. *(Moved from Later in slice 5: an English-only drill isn't believable for an elderly Indian parent.)*
 - Setup form with a "Use demo details" button, a handoff screen, the drill screen and the report card.
 - Live tactic tagging with a one-line explanation, and a pressure meter.
 - Deterministic endings (win, OTP loss, payment loss, partial).
 - Safety: a permanent training banner; only fake OTPs, account numbers and officer names; no real personal or financial data asked for or stored; the scammer prompt is framed as a consented training simulation; the API key is kept in `.env` and gitignored.
 
 ## Later
-- Hindi and Hinglish (language is just a prompt variable). This is the first stretch goal.
 - A grandparent-scam scenario, so US judges can relate.
 - Voice mode.
 - Sending the drill to the parent's own phone by link.
+- Other Indian languages (Tamil, Bengali, Marathi…). The strings dictionary and per-language canned lines make this a translation job, not a redesign.
 
 ## Explicitly Cut
 - **Accounts and login:** not needed to prove the drill works, and they add setup friction for the demo.
 - **Databases and storage:** drill state lives in the session. Storing family details would also go against the "store nothing real" safety rule.
 - **Real phone calls and SMS:** unsafe and legally risky; the in-app fake SMS proves the point.
-- **Deployment complexity:** judges watch the video and don't run the code. Deployment is optional.
+- **Deployment of the live-AI version:** it would expose the API key's free-tier limit to strangers. Instead, a **static demo-mode build** (scripted lines only, no key, no server) gives judges a safe link to click. *(Added in slice 5.)*
 - **AI-judged losing:** replaced by deterministic OTP and Pay detection, so outcomes are reliable and explainable.
