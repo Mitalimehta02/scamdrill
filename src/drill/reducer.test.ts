@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { drillReducer, initialDrill, type DrillAction, type DrillState } from "./reducer";
+import { apiHistory, drillReducer, initialDrill, type DrillAction, type DrillState } from "./reducer";
 import { STAGE_COUNT } from "./script";
 import { TACTICS } from "./tactics";
 
@@ -69,6 +69,67 @@ describe("turns and stages", () => {
     ]);
     expect(s.ending).toEqual({ type: "win", reason: "call" });
     expect(s.pressure).toBe(0);
+  });
+});
+
+/** Plays scammer line + parent reply until the drill reaches `stage`. */
+function toStage(stage: number): DrillState {
+  let s = initialDrill(0, "482913");
+  for (let i = 1; i < stage; i++) {
+    s = run([{ type: "SCAMMER_MESSAGE", id: i, text: `line ${i}`, aiFailed: false, now: 0 }, { type: "PARENT_REPLY", id: 100 + i, text: "hmm", now: 0 }], s);
+  }
+  return s;
+}
+
+describe("OTP and Pay events", () => {
+  it("the fake SMS appears exactly when stage 5 begins", () => {
+    expect(toStage(4).otpVisible).toBe(false);
+    expect(toStage(5).otpVisible).toBe(true);
+    expect(toStage(8).otpVisible).toBe(true);
+  });
+
+  it("the Pay card appears when stage 7 begins, once, and is never sent to the AI", () => {
+    const s = toStage(8);
+    const cards = s.messages.filter((m) => m.kind === "pay");
+    expect(cards).toHaveLength(1);
+    expect(cards[0].stage).toBe(7);
+    expect(apiHistory(s.messages).some((h) => h.text === "")).toBe(false);
+    expect(toStage(6).messages.some((m) => m.kind === "pay")).toBe(false);
+  });
+
+  it("tapping Pay is a loss, and the slip is the scammer's last line (not the card)", () => {
+    const s = run(
+      [{ type: "SCAMMER_MESSAGE", id: 7, text: "transfer {AMOUNT} now", aiFailed: false, now: 0 }, { type: "EXIT", reason: "pay", now: 9 }],
+      toStage(7),
+    );
+    expect(s.ending).toEqual({ type: "loss", reason: "pay" });
+    expect(s.slipMessageId).toBe(7);
+  });
+});
+
+describe("guard losses", () => {
+  it("record the ending and the scammer line that was active, without storing the typed text", () => {
+    const before = run([{ type: "SCAMMER_MESSAGE", id: 5, text: "read me the code", aiFailed: false, now: 0 }], toStage(5));
+    const s = drillReducer(before, { type: "GUARD_LOSS", kind: "otp", now: 3 });
+    expect(s.ending).toEqual({ type: "loss", reason: "otp" });
+    expect(s.slipMessageId).toBe(5);
+    expect(s.messages).toHaveLength(before.messages.length);
+  });
+});
+
+describe("silence nudge", () => {
+  it("happens at most once per stage, doesn't advance the stage, and resets on the next stage", () => {
+    let s = run([{ type: "SCAMMER_MESSAGE", id: 1, text: "x", aiFailed: false, now: 0 }]);
+    s = drillReducer(s, { type: "NUDGE_DUE" });
+    expect(s.pendingNudge).toBe(true);
+    expect(s.awaiting).toBe("scammer");
+    s = drillReducer(s, { type: "SCAMMER_MESSAGE", id: 2, text: "Hello? {PARENT} ji", aiFailed: false, now: 0, nudge: true });
+    expect(s.stage).toBe(1);
+    expect(s.pendingNudge).toBe(false);
+    expect(drillReducer(s, { type: "NUDGE_DUE" })).toBe(s); // second nudge in the same stage: ignored
+    s = drillReducer(s, { type: "PARENT_REPLY", id: 3, text: "yes?", now: 0 });
+    s = drillReducer(s, { type: "SCAMMER_MESSAGE", id: 4, text: "y", aiFailed: false, now: 0 });
+    expect(drillReducer(s, { type: "NUDGE_DUE" }).pendingNudge).toBe(true);
   });
 });
 

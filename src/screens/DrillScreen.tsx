@@ -1,4 +1,4 @@
-// prd.md > The Drill Screen. The browser is the referee: the reducer owns stage and pressure;
+// prd.md > The Drill Screen. The browser is the referee: the reducer owns stage, pressure and endings;
 // this screen only asks the server for words and labels, then hands the results to the reducer.
 
 import { useEffect, useRef, useState, type Dispatch } from "react";
@@ -7,14 +7,18 @@ import { CallTimer } from "../components/CallTimer";
 import { ChatBubble } from "../components/ChatBubble";
 import { ExitButtons } from "../components/ExitButtons";
 import { OfflineNote } from "../components/OfflineNote";
+import { OtpBanner } from "../components/OtpBanner";
+import { PayCard } from "../components/PayCard";
 import { PressureMeter } from "../components/PressureMeter";
 import { TypingIndicator } from "../components/TypingIndicator";
 import { classify, getScammerLine } from "../drill/api";
+import { checkReply } from "../drill/guard";
 import { fill, toPlaceholders } from "../drill/placeholders";
 import { apiHistory, type DrillAction, type DrillState } from "../drill/reducer";
 import { STAGES } from "../drill/script";
 import { safeContactLabel, type FamilySetup } from "../drill/setup";
 
+const SILENCE_MS = 25000;
 let nextId = 1;
 
 export function DrillScreen({
@@ -36,25 +40,43 @@ export function DrillScreen({
     if (drill.ending || drill.awaiting !== "scammer") return;
     let cancelled = false;
     const stage = drill.stage;
-    getScammerLine(stage, apiHistory(drill.messages), { demo }).then((line) => {
+    const nudge = drill.pendingNudge;
+    getScammerLine(stage, apiHistory(drill.messages), { demo, nudge }).then((line) => {
       if (cancelled) return;
       const id = nextId++;
       // Show the bubble straight away; the chip animates in when the classifier answers.
-      dispatch({ type: "SCAMMER_MESSAGE", id, text: line.text, aiFailed: line.aiFailed, now: Date.now() });
-      classify(line.text, STAGES[stage].plannedTactic, { demo }).then((tag) =>
+      dispatch({ type: "SCAMMER_MESSAGE", id, text: line.text, aiFailed: line.aiFailed, now: Date.now(), nudge });
+      classify(line.text, STAGES[stage].plannedTactic, { demo, nudge }).then((tag) =>
         dispatch({ type: "TAG", id, tactic: tag.tactic, source: tag.source }),
       );
     });
     return () => {
       cancelled = true;
     };
-    // Only a change of turn or stage should trigger a new request.
-  }, [drill.awaiting, drill.stage, drill.ending, demo]);
+    // Only a change of turn, stage or nudge should trigger a new request.
+  }, [drill.awaiting, drill.stage, drill.ending, drill.pendingNudge, demo]);
 
-  // Keep the newest message in view.
+  // Silence: after 25 s without a reply, the scammer sends one nudge (at most one per stage).
+  // Typing resets the clock, so a slow typist isn't interrupted mid-reply.
   useEffect(() => {
-    chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: "smooth" });
-  }, [drill.messages, drill.awaiting]);
+    if (drill.ending || drill.awaiting !== "parent" || drill.nudgedThisStage) return;
+    const t = setTimeout(() => dispatch({ type: "NUDGE_DUE" }), SILENCE_MS);
+    return () => clearTimeout(t);
+  }, [drill.awaiting, drill.stage, drill.ending, drill.nudgedThisStage, draft, dispatch]);
+
+  // Keep the newest message in view — but never scroll past its top. A long line (or line + chip)
+  // that doesn't fit is shown from its first word, so the parent reads it from the start.
+  const messageCount = drill.messages.length;
+  const lastTagged = drill.messages[messageCount - 1]?.tactic;
+  useEffect(() => {
+    const chat = chatRef.current;
+    if (!chat) return;
+    const all = chat.querySelectorAll<HTMLElement>(".msg");
+    const last = all[all.length - 1];
+    const bottom = chat.scrollHeight - chat.clientHeight;
+    const top = last ? last.offsetTop - 8 : bottom;
+    chat.scrollTo({ top: Math.min(bottom, top), behavior: "smooth" });
+  }, [messageCount, lastTagged, drill.awaiting]);
 
   const canReply = drill.awaiting === "parent" && !drill.ending;
   const typing = drill.awaiting === "scammer" && !drill.ending;
@@ -63,16 +85,24 @@ export function DrillScreen({
     e.preventDefault();
     const text = draft.trim();
     if (!text || !canReply) return;
+    // The safety guard runs first. A match ends the drill, and the text is never stored or sent.
+    const verdict = checkReply(text, { fakeOtp: drill.fakeOtp, stage: drill.stage });
+    setDraft("");
+    if (verdict !== "ok") {
+      dispatch({ type: "GUARD_LOSS", kind: verdict, now: Date.now() });
+      return;
+    }
     // Real names never leave the browser: "Is Rahul safe?" is stored and sent as "Is {SAFE_CONTACT} safe?".
     dispatch({ type: "PARENT_REPLY", id: nextId++, text: toPlaceholders(text, setup), now: Date.now() });
-    setDraft("");
   }
+
+  const exit = (reason: "hangup" | "call" | "pay") => dispatch({ type: "EXIT", reason, now: Date.now() });
 
   return (
     <div className="drill">
       <header className="drill-header">
         <div className="caller">
-          <Badge size={44} />
+          <Badge size={36} />
           <div className="caller-id">
             <div className="caller-name">Inspector Sharma</div>
             <div className={`caller-sub${typing ? " typing-text" : ""}`}>{typing ? "typing…" : "CBI Cyber Cell"}</div>
@@ -82,20 +112,25 @@ export function DrillScreen({
         <PressureMeter value={drill.pressure} />
       </header>
 
-      <div className="chat" ref={chatRef} aria-live="polite">
-        {drill.messages.map((m) => (
-          <ChatBubble key={m.id} role={m.role} text={fill(m.text, setup)} at={m.at} tactic={m.tactic} />
-        ))}
-        {typing && <TypingIndicator />}
-        {drill.offlineMode && <OfflineNote />}
+      <div className="chat-wrap">
+        {/* Drops in below the header, so the meter and timer stay visible at the OTP moment. */}
+        {drill.otpVisible && <OtpBanner code={drill.fakeOtp} />}
+
+        <div className="chat" ref={chatRef} aria-live="polite">
+          {drill.messages.map((m) =>
+            m.kind === "pay" ? (
+              <PayCard key={m.id} disabled={!!drill.ending} onPay={() => exit("pay")} />
+            ) : (
+              <ChatBubble key={m.id} role={m.role} text={fill(m.text, setup)} at={m.at} tactic={m.tactic} />
+            ),
+          )}
+          {typing && <TypingIndicator />}
+          {drill.offlineMode && <OfflineNote />}
+        </div>
       </div>
 
       <footer className="drill-footer">
-        <ExitButtons
-          contactLabel={safeContactLabel(setup)}
-          onHangUp={() => dispatch({ type: "EXIT", reason: "hangup", now: Date.now() })}
-          onCall={() => dispatch({ type: "EXIT", reason: "call", now: Date.now() })}
-        />
+        <ExitButtons contactLabel={safeContactLabel(setup)} onHangUp={() => exit("hangup")} onCall={() => exit("call")} />
         <form className="compose" onSubmit={send}>
           <label htmlFor="reply" className="sr-only">
             Your reply

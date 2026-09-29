@@ -29,7 +29,7 @@ Build mode: learn (tight: 3–5 bullets on what changed and why, the 1–2 key f
   Learner check: Run `npm run dev`, open http://localhost:5173, tap Use demo details → Hand to Kamala → Start practice, and chat for 3–4 turns. Does it feel like a real chat under pressure, and is the look calm and serious rather than generic? Then try `/?demo=1`.
   Commit: `slice 2: setup, handoff and live tagged drill chat`
 
-- [ ] **3. The drill ends the right way: OTP, Pay, the safety guard, silence and partial**
+- [x] **3. The drill ends the right way: OTP, Pay, the safety guard, silence and partial**
   Becomes usable: At stage 5 the fake OTP banner slides in, and typing that code ends the drill. At stage 7 the Pay card appears, and tapping Pay ends it. Real-looking numbers are blocked before sending and end the drill. Waiting 25 seconds brings one nudge. Stage 10 ends as partial. Each ending reaches a basic ending screen with the correct label.
   Why now: Deterministic losing is the second half of the kernel, and the safety promise. It needs the working drill from slice 2.
   PRD ref: `prd.md > Fake OTP and Pay Card`, `prd.md > Endings (Deterministic)`, `prd.md > Safety Guard`, `prd.md > Drill Script and Pacing`
@@ -51,7 +51,7 @@ Build mode: learn (tight: 3–5 bullets on what changed and why, the 1–2 key f
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored — after slice 2 (the look and feel of the live drill can still shape slices 3–4)
+- [x] Early usable behavior explored — after slice 2 (the look and feel of the live drill can still shape slices 3–4)
 - [ ] Final kick-the-tires exploration and feedback completed
 
 ## Final Review
@@ -82,3 +82,7 @@ Activity mode: [not started]
 - React StrictMode is left off. In development it runs effects twice, which doubles every Groq call against the 8,000 tokens/minute free tier.
 - Live-mode scammer lines wait at least 900 ms. Groq often answers in about 0.5 s, which made the typing indicator flicker.
 - Early-checkpoint tweaks added to slice 2 at the learner's request: the meter shifts colour (slate → amber → red), "typing…" in the header, bubble timestamps, a chip slide-in with a brief amber glow on its bubble, and an "● On call mm:ss" header timer. The PRD's "red only for Hang up" was relaxed for the meter's top band.
+- The OTP banner drops in below the drill header, over the top of the chat, and is fully opaque. At the top of the screen, it hid the timer and pressure meter at exactly the moment they spike, which is the key video shot.
+- The Pay card is stored as a special chat item (`kind: "pay"`) that is excluded from the AI history and from tagging, and the loss screen's "moment" uses the scammer's last actual line. The spec didn't say how the card lives in the chat.
+- The silence timer restarts while the parent is typing, so a slow typist isn't interrupted mid-reply. The PRD only said "25 seconds with no reply".
+- Early-checkpoint feedback (learner tried the drill and reviewed screenshots): it reads as calm and serious, not generic. Fixes applied: a compact header (name on one line, smaller badge and timer, a one-row meter), 56px exit buttons, timestamps tucked into the bubble's last line, scrolling that keeps a new message's top in view, and hidden scrollbars inside the phone. The "coming soon" language options were confirmed.

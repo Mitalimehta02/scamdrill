@@ -1,7 +1,7 @@
 // The drill state machine: the app — not the AI — decides stage, pressure and endings.
 // Pure: no network, no timers, so every rule is unit-testable (spec.md > Drill Engine).
 
-import { STAGE_COUNT } from "./script";
+import { STAGE_COUNT, STAGES } from "./script";
 import { TACTIC_INFO, METER_CAP, type Tactic } from "./tactics";
 
 export interface Msg {
@@ -15,6 +15,8 @@ export interface Msg {
   tactic?: Tactic;
   tacticSource?: "ai" | "planned";
   nudge?: boolean;
+  /** The fake "Transfer to RBI safe account" card (stage 7). Not dialogue: never sent to the AI or tagged. */
+  kind?: "pay";
 }
 
 export type EndReason = "hangup" | "call" | "otp" | "sensitive" | "pay" | "stayed";
@@ -31,11 +33,19 @@ export interface DrillState {
   /** Whose turn it is. The scammer line for `stage` is requested while this is "scammer". */
   awaiting: "scammer" | "parent";
   fakeOtp: string;
+  /** The fake OTP SMS has appeared (stage 5 onwards). */
+  otpVisible: boolean;
+  /** At most one silence nudge per stage. */
+  nudgedThisStage: boolean;
+  /** The next scammer line should be a nudge, not the stage beat. */
+  pendingNudge: boolean;
   consecutiveAiFailures: number;
   offlineMode: boolean;
   startedAt: number;
   endedAt?: number;
   ending?: Ending;
+  /** The scammer message the parent gave in to (shown on the loss screen). */
+  slipMessageId?: number;
 }
 
 export type DrillAction =
@@ -43,7 +53,9 @@ export type DrillAction =
   | { type: "SCAMMER_MESSAGE"; id: number; text: string; aiFailed: boolean; now: number; nudge?: boolean }
   | { type: "TAG"; id: number; tactic: Tactic; source: "ai" | "planned" }
   | { type: "PARENT_REPLY"; id: number; text: string; now: number }
-  | { type: "EXIT"; reason: "hangup" | "call"; now: number };
+  | { type: "EXIT"; reason: "hangup" | "call" | "pay"; now: number; id?: number }
+  | { type: "NUDGE_DUE" }
+  | { type: "GUARD_LOSS"; kind: "otp" | "sensitive"; now: number };
 
 export const OFFLINE_AFTER_FAILURES = 3;
 
@@ -54,6 +66,9 @@ export function initialDrill(now = 0, fakeOtp = "000000"): DrillState {
     pressure: 0,
     awaiting: "scammer",
     fakeOtp,
+    otpVisible: false,
+    nudgedThisStage: false,
+    pendingNudge: false,
     consecutiveAiFailures: 0,
     offlineMode: false,
     startedAt: now,
@@ -74,6 +89,7 @@ export function drillReducer(state: DrillState, action: DrillAction): DrillState
           { id: action.id, role: "scammer", text: action.text, stage: state.stage, at: action.now, nudge: action.nudge },
         ],
         awaiting: "parent",
+        pendingNudge: false,
         consecutiveAiFailures: failures,
         // Sticky: once offline, stay offline for this drill so the note doesn't flicker.
         offlineMode: state.offlineMode || failures >= OFFLINE_AFTER_FAILURES,
@@ -100,24 +116,51 @@ export function drillReducer(state: DrillState, action: DrillAction): DrillState
       if (state.stage >= STAGE_COUNT) {
         return { ...state, messages, ending: { type: "partial", reason: "stayed" }, endedAt: action.now };
       }
+      const stage = state.stage + 1; // each reply advances exactly one stage
+      const event = STAGES[stage].event;
+      // The fake SMS and the Pay card appear as soon as their stage begins, not on a timer.
+      const payCard: Msg[] = event === "pay" ? [{ id: -stage, role: "scammer", kind: "pay", text: "", stage, at: action.now }] : [];
       return {
         ...state,
-        messages,
-        stage: state.stage + 1, // each reply advances exactly one stage
+        messages: [...messages, ...payCard],
+        stage,
         awaiting: "scammer",
+        otpVisible: state.otpVisible || event === "otp",
+        nudgedThisStage: false,
       };
     }
 
-    case "EXIT":
+    case "NUDGE_DUE":
+      if (state.awaiting !== "parent" || state.nudgedThisStage) return state;
+      return { ...state, awaiting: "scammer", pendingNudge: true, nudgedThisStage: true };
+
+    case "GUARD_LOSS":
       return {
         ...state,
-        ending: { type: "win", reason: action.reason },
+        ending: { type: "loss", reason: action.kind },
         endedAt: action.now,
+        slipMessageId: lastScammerLine(state.messages)?.id,
       };
+
+    case "EXIT":
+      if (action.reason === "pay") {
+        return {
+          ...state,
+          ending: { type: "loss", reason: "pay" },
+          endedAt: action.now,
+          slipMessageId: lastScammerLine(state.messages)?.id,
+        };
+      }
+      return { ...state, ending: { type: "win", reason: action.reason }, endedAt: action.now };
   }
+}
+
+/** The last thing the scammer actually said (the Pay card doesn't count). */
+export function lastScammerLine(messages: Msg[]): Msg | undefined {
+  return [...messages].reverse().find((m) => m.role === "scammer" && m.kind !== "pay");
 }
 
 /** What the server is allowed to see: roles and placeholder text only. */
 export function apiHistory(messages: Msg[]): { role: Msg["role"]; text: string }[] {
-  return messages.map(({ role, text }) => ({ role, text }));
+  return messages.filter((m) => m.kind !== "pay").map(({ role, text }) => ({ role, text }));
 }

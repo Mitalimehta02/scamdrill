@@ -1,5 +1,5 @@
 /** Rises by fixed points per tactic; never reads the parent's replies (prd.md > Tactic Tagging and Pressure Meter).
- *  Its colour shifts slate → amber → red as it fills, so rising pressure reads on camera. */
+ *  Its colour shifts slate → amber → red as it fills, so rising pressure reads on camera. One compact row. */
 export function meterLevel(value: number): "low" | "mid" | "high" {
   if (value >= 70) return "high";
   if (value >= 35) return "mid";
@@ -9,10 +9,7 @@ export function meterLevel(value: number): "low" | "mid" | "high" {
 export function PressureMeter({ value }: { value: number }) {
   return (
     <div className={`meter meter-${meterLevel(value)}`}>
-      <div className="meter-label">
-        <span>Pressure</span>
-        <span>{value}%</span>
-      </div>
+      <span className="meter-name">Pressure</span>
       <div
         className="meter-track"
         role="meter"
@@ -23,6 +20,7 @@ export function PressureMeter({ value }: { value: number }) {
       >
         <div className="meter-fill" style={{ width: `${value}%` }} />
       </div>
+      <span className="meter-value">{value}%</span>
     </div>
   );
 }

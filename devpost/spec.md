@@ -111,7 +111,7 @@ Implements `prd.md > Look and Feel`. The CSS variables go in `src/styles/tokens.
 | `--red` | `#B3261E` | Hang up button; the meter uses slate `#8FA3BF` (<35) → amber `#F0A93A` (35–69) → red `#EF5A45` (≥70). Never for failure screens. |
 
 - **Type:** Noto Sans. Base `18px`, chat text `18px`, headings 24–28px, nothing under 15px. Line height 1.5.
-- **Sizes:** tap targets at least 56px high. Hang up and Call are full-width halves, about 64px high.
+- **Sizes:** tap targets at least 56px high. Hang up and Call are full-width halves, 56px high. The drill header is compact (the caller name on one line at 17px, a one-row meter) so at least two bubbles with chips fit on screen. Scrollbars are hidden inside the phone frame.
 - **Phone frame:** on screens wider than 480px, the app sits in a centred 390×844 rounded frame on a dark slate backdrop. On phones it's full-screen.
 - **Chat:** scammer bubbles on the left (white, with a thin border), parent bubbles on the right (navy, white text), a three-dot typing indicator, and a generic badge avatar (an inline SVG, not a real emblem).
 - **Motion:** the OTP banner slides down (300ms), the meter fill animates its width and colour, chips slide and fade in (300ms), and the flagged bubble glows amber once (1.6s). No shaking or flashing.
