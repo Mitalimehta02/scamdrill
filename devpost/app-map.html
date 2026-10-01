@@ -60,7 +60,7 @@ pre{background:var(--chip);border-radius:8px;padding:12px;overflow:auto;font-siz
 <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--muted)"/></marker></defs>
 <rect class="zone" x="6" y="16" width="470" height="276" rx="12"/><text class="zt" x="18" y="34">BROWSER (real names stay here)</text>
 <rect class="zone" x="496" y="16" width="318" height="276" rx="12"/><text class="zt" x="508" y="34">SERVER + GROQ</text>
-<rect class="bx" x="20" y="48" width="200" height="60" rx="9"/><text x="120" y="72" text-anchor="middle" font-weight="700">send()</text><text x="120" y="92" text-anchor="middle" class="sm">guard → placeholders</text>
+<rect class="bx" x="20" y="48" width="200" height="60" rx="9"/><text x="120" y="72" text-anchor="middle" font-weight="700">sendText()</text><text x="120" y="92" text-anchor="middle" class="sm">guard → placeholders</text>
 <rect class="bx" x="250" y="48" width="210" height="60" rx="9"/><text x="355" y="72" text-anchor="middle" font-weight="700">drillReducer</text><text x="355" y="92" text-anchor="middle" class="sm">PARENT_REPLY: stage + 1</text>
 <rect class="bx" x="250" y="140" width="210" height="60" rx="9"/><text x="355" y="164" text-anchor="middle" font-weight="700">getScammerLine / classify</text><text x="355" y="184" text-anchor="middle" class="sm">timeouts + fallbacks</text>
 <rect class="bx" x="512" y="140" width="290" height="60" rx="9"/><text x="657" y="164" text-anchor="middle" font-weight="700">generateScammerLine → classifyTactic</text><text x="657" y="184" text-anchor="middle" class="sm">prompt · output check · tactic list</text>
@@ -74,8 +74,8 @@ pre{background:var(--chip);border-radius:8px;padding:12px;overflow:auto;font-siz
 
 <h2>The route: 3 stops (a reference route)</h2>
 <ol class="route">
-  <li><span class="where">src/screens/DrillScreen.tsx</span>, <span class="anchor">search: <code>function send</code></span><br>
-  The reply first goes through <code>checkReply</code> (<code>src/drill/guard.ts</code>). The fake OTP or a sensitive number ends the drill right here, and the text is never stored or sent. Otherwise <code>toPlaceholders</code> turns "Can I call Rahul?" into "Can I call {SAFE_CONTACT}?", and the reducer's <code>case "PARENT_REPLY"</code> advances exactly one stage.</li>
+  <li><span class="where">src/screens/DrillScreen.tsx</span>, <span class="anchor">search: <code>function sendText</code>, then <code>prepareReply</code> in <code>src/drill/reply.ts</code></span><br>
+  Typed replies and quick-reply taps take this same path. The reply first goes through <code>checkReply</code> (<code>src/drill/guard.ts</code>). The fake OTP or a sensitive number ends the drill right here, and the text is never stored or sent. Otherwise <code>toPlaceholders</code> turns "Can I call Rahul?" into "Can I call {SAFE_CONTACT}?", and the reducer's <code>case "PARENT_REPLY"</code> advances exactly one stage.</li>
   <li><span class="where">src/drill/api.ts</span>, <span class="anchor">search: <code>export async function getScammerLine</code> and <code>export async function classify</code></span><br>
   The stage change triggers the first <code>useEffect</code> in <code>DrillScreen.tsx</code>. It asks for Sharma's line (8-second budget, falling back to the stage's canned line), shows it straight away, then asks for the label (3-second budget, falling back to the planned tactic). This is why the drill never shows an error.</li>
   <li><span class="where">server/llm.ts</span>, <span class="anchor">search: <code>generateScammerLine</code>, <code>checkScammerOutput</code>, <code>classifyTactic</code></span><br>
