@@ -45,6 +45,12 @@ An adult child sets up a safe, practice "digital arrest" scam for their elderly 
 4. **Ending (parent):** a kind, teaching screen. A win shows three facts. A loss says "This is how it happens to careful people" and highlights the exact message they gave in to. Every ending shows the real-life step: *hang up, call **1930** or report at **cybercrime.gov.in***.
 5. **Report card (child):** the outcome, time on the line, the tactics faced and never reached, the moment of the slip, and one tip to practise next.
 
+## Design choices
+
+**Why text, not voice, in this proof of concept?** Digital-arrest scammers use chat apps as well as calls: India's I4C has blocked [83,668 WhatsApp accounts and 3,962 Skype IDs](https://inc42.com/buzz/indians-lost-inr-1935-cr-to-digital-arrest-scams-in-2024-govt/) used in these frauds. More importantly, text keeps every tactic visible and readable at the parent's own pace, and it lets the browser's safety guard check every reply *before* anything leaves the device. Sharma's lines can be read aloud with the browser's own voice (optional, off by default), and quick-reply buttons mean the parent doesn't have to type. Full voice conversation is the next step.
+
+**Why do the chips name every tactic?** This is a first drill, and the chips are training wheels. Seeing "URGENCY" or "SECRECY" at the moment it happens is how the pattern gets learned. The report card then measures what actually happened (when they ended the call, which tactic got them), so the lesson isn't just reading labels. A harder mode that hides the chips until the end is listed as "Later".
+
 ## The AI pipeline (two steps, and the app is the referee)
 
 | Step | Where | What it does |
