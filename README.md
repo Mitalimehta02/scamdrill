@@ -4,7 +4,7 @@
 
 People reported losing **$3.5 billion to impostor scams in the US alone in 2025**, including about $920 million to *government* impersonators ([FTC, June 2026](https://www.ftc.gov/news-events/news/press-releases/2026/06/ftc-data-show-people-reported-losing-3-point-5-billion-imposter-scams-2025)). In India, a version called **"digital arrest"**, where fraudsters pose as CBI or police officers on a call and keep the victim "under arrest" on video until they pay, cost **₹1,935 crore in 2024** across 1.23 lakh complaints ([government data reported by Inc42](https://inc42.com/buzz/indians-lost-inr-1935-cr-to-digital-arrest-scams-in-2024-govt/)). That's up from ₹91 crore in 2022.
 
-**▶ Try the demo:** *link coming soon* (a static, scripted-lines build: no AI key, nothing sent anywhere)
+**▶ Try the demo: [scamdrill-six.vercel.app](https://scamdrill-six.vercel.app)**. This is a static build with scripted lines, in English, हिन्दी and Hinglish: no AI key, and nothing you type is sent anywhere. The live-AI version runs locally (see *Run it*).
 
 An adult child sets up a safe, practice "digital arrest" scam for their elderly parent, using the family's own details. The parent chats with an AI "Inspector Sharma" who follows a real scam script, while every pressure tactic is named on screen as it happens. The parent wins by hanging up or calling family, and loses by sharing the fake OTP or tapping Pay. The report card goes back to the child.
 
