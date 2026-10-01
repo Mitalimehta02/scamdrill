@@ -88,11 +88,10 @@ npm run dev                 # open http://localhost:5173
 
 `npm run build:demo` builds a static site that **only** runs demo mode. It makes no `/api` calls, needs no key, and shows a small "Demo mode: scripted lines" note. The live-AI version stays local, so the key and the free-tier limit are never exposed.
 
-**Vercel (recommended):**
-1. Push this repo to GitHub.
-2. On [vercel.com](https://vercel.com), choose **Add New → Project** and import the repo.
-3. Set the **Framework preset** to *Vite*, the **Build command** to `npm run build:demo` and the **Output directory** to `dist`.
-4. **Deploy.** No environment variables are needed.
+**Vercel (recommended):** the repo's `vercel.json` already pins the build command (`npm run build:demo`) and the output directory (`dist`).
+1. On [vercel.com](https://vercel.com), choose **Add New → Project** and import the repo.
+2. **Deploy.** No environment variables are needed.
+3. Under **Settings → Deployment Protection**, turn **Vercel Authentication** off, so the link opens for anyone.
 
 The build uses relative paths (`--base=./`), so `dist/` also works on GitHub Pages or any static host.
 
