@@ -2,7 +2,7 @@
 
 **A fire drill for scams, set up by the family.** In English, हिन्दी and Hinglish.
 
-People reported losing **$3.5 billion to impostor scams in the US alone in 2025**, including about $920 million to *government* impersonators ([FTC, June 2026](https://www.ftc.gov/news-events/news/press-releases/2026/06/ftc-data-show-people-reported-losing-3-point-5-billion-imposter-scams-2025)). In India, a version called **"digital arrest"**, where fraudsters pose as CBI or police officers on a call and keep the victim "under arrest" on video until they pay, cost **₹1,935 crore in 2024** across 1.23 lakh complaints ([government data reported by Inc42](https://inc42.com/buzz/indians-lost-inr-1935-cr-to-digital-arrest-scams-in-2024-govt/)). That's up from ₹91 crore in 2022.
+People reported losing **$3.5 billion to impostor scams in the US alone in 2025**, including about $920 million to *government* impersonators ([FTC, June 2026](https://www.ftc.gov/news-events/news/press-releases/2026/06/ftc-data-show-people-reported-losing-3-point-5-billion-imposter-scams-2025)). In India, a version called **"digital arrest"**, where fraudsters pose as CBI or police officers and keep the victim "visually available over Skype or other video conferencing platform … till their demands are met" ([Ministry of Home Affairs / I4C alert, via PIB](https://www.pib.gov.in/PressReleasePage.aspx?PRID=2020570)), cost **₹1,935 crore in 2024** across 1.23 lakh complaints. That's up from ₹91 crore across 39,925 cases in 2022 ([Minister of State for Home Affairs in Parliament, reported by Inc42](https://inc42.com/buzz/indians-lost-inr-1935-cr-to-digital-arrest-scams-in-2024-govt/)).
 
 **▶ Try the demo: [scamdrill-six.vercel.app](https://scamdrill-six.vercel.app)**. This is a static build with scripted lines, in English, हिन्दी and Hinglish: no AI key, and nothing you type is sent anywhere. The live-AI version runs locally (see *Run it*).
 
@@ -26,9 +26,9 @@ An adult child sets up a safe, practice "digital arrest" scam for their elderly 
 
 ## Why
 
-- **Impostor scams are a global problem,** and "digital arrest" is India's sharpest form of it. Elderly people are heavily targeted (figures and sources above).
-- Warnings forwarded on WhatsApp tell people about scams, but they don't build the **reflex to hang up**. Practice does. Everyone knows a fire drill is a drill, but people still learn the exit route. Research on psychological inoculation ("prebunking", e.g. the Cambridge *Bad News* game) shows that experiencing a weakened version of a manipulation tactic improves resistance to the real thing.
-- Existing tools (senior safety simulators, quiz-style training) are generic. ScamDrill differs in three ways:
+- **Impostor scams are a global problem,** and "digital arrest" is India's sharpest form of it (figures and sources above).
+- Warnings forwarded on WhatsApp tell people about scams, but they don't build the **reflex to hang up**. Practice does. Everyone knows a fire drill is a drill, but people still learn the exit route. Research on psychological inoculation ("prebunking") supports the idea: in a study of about 15,000 people, playing the *Bad News* game, which walks players through misinformation techniques, improved their ability to spot and resist misinformation ([Roozenbeek & van der Linden, 2019](https://doi.org/10.1057/s41599-019-0279-9)). ScamDrill applies the same idea to phone scams. That transfer is a hypothesis we haven't tested yet.
+- **Existing tools teach the warning signs in other ways.** The [StopAiFraud Senior Safety Simulator](https://app.stopaifraud.com/tools/senior-safety-simulator) gives "multiple response options and instant feedback" across four scenarios, and the [OpenAI + AARP/OATS programme](https://www.edtechinnovationhub.com/news/openai-aarp-and-oats-launch-multi-year-push-to-help-older-adults-use-ai-safely) teaches warning signs ("urgent language, secrecy, suspicious links") through in-person and online lessons. ScamDrill differs in four ways:
   1. **The family sets it up with real personal details.** These are what make real scams convincing.
   2. **The role-play is open-ended,** not multiple choice.
   3. **The report card goes to the child,** so practising becomes a family habit.
