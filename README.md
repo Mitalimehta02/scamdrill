@@ -33,6 +33,17 @@ An adult child sets up a safe, practice "digital arrest" scam for their elderly 
   2. **The role-play is open-ended,** not multiple choice.
   3. **The report card goes to the child,** so practising becomes a family habit.
   4. **It speaks the parent's language:** English, हिन्दी (Devanagari) or Hinglish.
+
+### How it compares
+
+| | Set up by the family with real details | In the parent's language | Outcome decided by code from what the parent actually did | Report goes to the child |
+|---|---|---|---|---|
+| **ScamDrill** | Yes: names, bank, grandchild, safe contact | English, हिन्दी, Hinglish | Yes: typing the fake OTP or tapping Pay loses; Hang up / Call wins, at any point | Yes: a report card handed back to the child |
+| [**StopAiFraud Senior Safety Simulator**](https://app.stopaifraud.com/tools/senior-safety-simulator) | Not mentioned on its page | English (others not mentioned) | Picks from "multiple response options" with instant feedback | Not mentioned |
+| [**OpenAI + AARP/OATS programme**](https://www.edtechinnovationhub.com/news/openai-aarp-and-oats-launch-multi-year-push-to-help-older-adults-use-ai-safely) | Not mentioned (in-person and online lessons) | Not mentioned (US programme) | No simulation mentioned | Not mentioned |
+
+<sub>Checked against each tool's own page or published reporting on 1 Oct 2026. "Not mentioned" means the source doesn't say, not that the feature is absent.</sub>
+
 - **How this maps elsewhere:** the same drill design (a family setup, a staged script, named tactics, code-decided endings) fits the US **"grandparent scam"** and other impostor scripts. Only the script, canned lines and strings change. It's listed as future work.
 
 ## How it works

@@ -25,7 +25,7 @@ They come back because the report card suggests one tactic to practise next time
 - A fire drill: calm, serious, safe, not a game show. A **"Training drill – this is not a real call"** banner is always visible.
 - The drill should feel like a real phone chat, with an official-sounding officer, a fake SMS notification sliding in, and a payment card, so the pressure is felt.
 - Prebunking research: Cambridge *Bad News* game (https://www.getbadnews.com).
-- Existing tools it differs from: StopAiFraud Senior Safety Simulator and the OpenAI/AARP training, which are generic or quiz-style.
+- Existing tools it differs from: the StopAiFraud Senior Safety Simulator (multiple-response scenarios with instant feedback) and the OpenAI + AARP/OATS programme (in-person and online lessons on warning signs). Verified on 1 Oct 2026; see the README's "How it compares".
 
 ## Why This Matters to the Learner
 "Digital arrest" calls have become common in India. Elderly relatives and family friends get them, and WhatsApp warnings don't build the reflex to hang up. Practice does. (The learner confirmed this story.) Indians lost ₹1,935 crore to digital arrest scams in 2024 (government data, reported by Inc42).
