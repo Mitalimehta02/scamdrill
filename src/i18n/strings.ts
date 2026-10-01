@@ -1,6 +1,6 @@
 // Every visible string, in English, हिन्दी and Hinglish (spec.md > Strings Dictionary). No i18n library.
 // Safety text (tips, win facts, the 1930 card) is written by us, never by the AI.
-// Hindi and Hinglish: NEEDS NATIVE REVIEW (see devpost/checklist.md, slice 5).
+// Hindi and Hinglish: reviewed by a native speaker (slice 5).
 
 import type { EndReason } from "../drill/reducer";
 import type { Tactic } from "../drill/tactics";
@@ -478,7 +478,7 @@ const hinglish: Strings = {
     right: "Bilkul sahi kiya.",
     facts: [
       "Asli police ya CBI kabhi phone call par kisi ko arrest nahi karti.",
-      "Indian law mein \"digital arrest\" jaisi koi cheez nahi hai.",
+      "Bharatiya kanoon mein \"digital arrest\" jaisi koi cheez nahi hai.",
       "Koi bhi sarkari officer kabhi aapka OTP nahi maangta.",
     ],
     lossTitle: "Saavdhaan logon ke saath bhi aisa hi hota hai.",

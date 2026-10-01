@@ -62,7 +62,7 @@ Build mode: learn (tight: 3–5 bullets on what changed and why, the 1–2 key f
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after slice 2 (the look and feel of the live drill can still shape slices 3–4)
-- [ ] Slice 5 native-language review: the learner reads the Hindi and Hinglish text (`src/i18n/strings.ts`, the canned lines in `src/drill/script.ts`) and marks anything unnatural. **Needs native review**, especially the safety facts and tips.
+- [x] Slice 5 native-language review (done by the learner: Hindi reads naturally; 3 Hinglish fixes and a "digital arrest" line at stage 4 applied): the learner reads the Hindi and Hinglish text (`src/i18n/strings.ts`, the canned lines in `src/drill/script.ts`) and marks anything unnatural. **Needs native review**, especially the safety facts and tips.
 - [x] Final kick-the-tires exploration and feedback completed (learner tried win, report card, OTP and Pay losses; five fixes requested and verified)
 
 ## Final Review

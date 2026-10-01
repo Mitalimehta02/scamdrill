@@ -3,7 +3,7 @@
 // (prd.md > Drill Script and Pacing, prd.md > Resilience and Demo Mode, prd.md > Languages).
 // Text uses placeholders ({PARENT}, {BANK}, ...) that are filled in only in the browser.
 // Beats stay in English: they are instructions to the model, never shown to the parent.
-// Hindi and Hinglish canned lines: NEEDS NATIVE REVIEW.
+// Hindi and Hinglish canned lines: reviewed by a native speaker (slice 5).
 
 import type { Lang } from "../i18n/strings";
 import type { Tactic } from "./tactics";
@@ -45,7 +45,7 @@ export const STAGES: Record<number, Stage> = {
     cannedLine: {
       en: "{PARENT} ji, your Aadhaar has been linked to a money-laundering case. Large amounts have moved through an account in your name at {BANK}.",
       hi: "{PARENT} जी, आपका आधार एक मनी-लॉन्ड्रिंग केस से जुड़ा पाया गया है। {BANK} में आपके नाम के खाते से बहुत बड़ी रकम का लेन-देन हुआ है।",
-      hinglish: "{PARENT} ji, aapka Aadhaar ek money laundering case se juda paya gaya hai. {BANK} mein aapke naam ke account se bahut bada lena-dena hua hai.",
+      hinglish: "{PARENT} ji, aapka Aadhaar ek money laundering case se juda paya gaya hai. {BANK} mein aapke naam ke account se bahut badi raqam ka transaction hua hai.",
     },
   },
   3: {
@@ -58,12 +58,12 @@ export const STAGES: Record<number, Stage> = {
     },
   },
   4: {
-    beat: "Insist the matter is confidential: they must not tell anyone, including family, and must stay on this call until verification is complete.",
+    beat: "Tell them they are now under \"digital arrest\" (use those exact words), then insist the matter is confidential: they must not tell anyone, including family, and must stay on this call until verification is complete.",
     plannedTactic: "SECRECY",
     cannedLine: {
-      en: "This is a confidential matter of national security. Do not tell anyone, not even your family. Stay on this call until verification is complete.",
-      hi: "यह राष्ट्रीय सुरक्षा का गोपनीय मामला है। किसी को मत बताइए, अपने परिवार को भी नहीं। जाँच पूरी होने तक यह कॉल मत काटिए।",
-      hinglish: "Yeh national security ka confidential matter hai. Kisi ko mat bataiye, apni family ko bhi nahi. Verification poora hone tak call mat kaatiye.",
+      en: "You are under digital arrest. This is a confidential matter of national security. Do not tell anyone, not even your family. Stay on this call until verification is complete.",
+      hi: "आप अभी डिजिटल अरेस्ट में हैं। यह राष्ट्रीय सुरक्षा का गोपनीय मामला है। किसी को मत बताइए, अपने परिवार को भी नहीं। जाँच पूरी होने तक यह कॉल मत काटिए।",
+      hinglish: "Aap abhi digital arrest mein hain. Yeh national security ka confidential matter hai. Kisi ko mat bataiye, apni family ko bhi nahi. Jaanch poori hone tak call mat kaatiye.",
     },
   },
   5: {
