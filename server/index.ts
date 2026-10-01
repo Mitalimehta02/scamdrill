@@ -3,7 +3,9 @@
 
 import "dotenv/config";
 import express from "express";
-import { classifyTactic, generateScammerLine, type HistoryTurn } from "./llm";
+import { classifyTactic, generateScammerLine } from "./llm";
+import { parseHistory } from "./validate";
+import { SERVER_BODY_LIMIT_BYTES, SERVER_MAX_TEXT } from "../src/drill/limits";
 import { NUDGE_BEAT, STAGE_COUNT, STAGES } from "../src/drill/script";
 import type { Lang } from "../src/i18n/strings";
 
@@ -11,18 +13,7 @@ const LANGS: Lang[] = ["en", "hi", "hinglish"];
 
 const app = express();
 // 12 kB: Hindi text is 3 bytes per character in UTF-8, so 6 turns of history can pass 4 kB.
-app.use(express.json({ limit: "12kb" }));
-
-function parseHistory(value: unknown): HistoryTurn[] | null {
-  if (!Array.isArray(value) || value.length > 30) return null;
-  const turns: HistoryTurn[] = [];
-  for (const item of value) {
-    if (!item || (item.role !== "scammer" && item.role !== "parent")) return null;
-    if (typeof item.text !== "string" || item.text.length > 600) return null;
-    turns.push({ role: item.role, text: item.text });
-  }
-  return turns;
-}
+app.use(express.json({ limit: SERVER_BODY_LIMIT_BYTES }));
 
 app.post("/api/scammer", async (req, res) => {
   const { stage, history, nudge, language } = req.body ?? {};
@@ -39,7 +30,7 @@ app.post("/api/scammer", async (req, res) => {
 
 app.post("/api/classify", async (req, res) => {
   const { text } = req.body ?? {};
-  if (typeof text !== "string" || !text.trim() || text.length > 600) {
+  if (typeof text !== "string" || !text.trim() || text.length > SERVER_MAX_TEXT) {
     res.status(400).json({ fallback: true });
     return;
   }

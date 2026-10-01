@@ -13,6 +13,7 @@ import { PressureMeter } from "../components/PressureMeter";
 import { TypingIndicator } from "../components/TypingIndicator";
 import { classify, getScammerLine } from "../drill/api";
 import { checkReply } from "../drill/guard";
+import { MAX_REPLY_CHARS, REPLY_COUNTER_FROM } from "../drill/limits";
 import { fill, toPlaceholders } from "../drill/placeholders";
 import { apiHistory, type DrillAction, type DrillState } from "../drill/reducer";
 import { STAGES } from "../drill/script";
@@ -142,9 +143,11 @@ export function DrillScreen({
           <input
             id="reply"
             value={draft}
-            onChange={(e) => setDraft(e.target.value)}
+            onChange={(e) => setDraft(e.target.value.slice(0, MAX_REPLY_CHARS))}
+            maxLength={MAX_REPLY_CHARS}
             placeholder={canReply ? t.reply : t.replyWaiting}
             autoComplete="off"
+            aria-describedby={draft.length >= REPLY_COUNTER_FROM ? "reply-count" : undefined}
           />
           <button type="submit" disabled={!canReply || !draft.trim()} aria-label={t.send}>
             <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
@@ -152,6 +155,11 @@ export function DrillScreen({
             </svg>
           </button>
         </form>
+        {draft.length >= REPLY_COUNTER_FROM && (
+          <div id="reply-count" className="reply-count" aria-live="polite">
+            {draft.length}/{MAX_REPLY_CHARS}
+          </div>
+        )}
       </footer>
     </div>
   );

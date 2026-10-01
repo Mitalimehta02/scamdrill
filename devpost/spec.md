@@ -228,6 +228,17 @@ Implements `prd.md > Look and Feel`. The CSS variables go in `src/styles/tokens.
   - "Instant reflex" when the parent hung up after 1 message.
   - **Choosing the tip:** after a loss, the tip for the slip message's tactic. Otherwise the tip for the tactic with the highest points that they faced.
 
+### Quick Replies and Reply Limit (`src/components/QuickReplies.tsx`)
+Added after the judge review.
+- `STRINGS[lang].drill.quickReplies(contactName)` gives 3 replies. `DrillScreen.sendText(text)` is the single path used for both typed and tapped replies: `checkReply` → `toPlaceholders` → `PARENT_REPLY`.
+- The reply input has `maxLength={MAX_REPLY_CHARS}` (300) and shows a counter from 240 characters. The server's per-message limit is 600, so a maximum-length reply never makes the history invalid.
+- PRD ref: `prd.md > The Drill Screen`.
+
+### Read-Aloud (`src/drill/speech.ts`, optional)
+- `pickVoice(lang)` uses `speechSynthesis.getVoices()` and prefers `hi-IN` for Hindi and Hinglish and `en-IN` for English. It returns null when there's no match, and the header toggle is then hidden.
+- When the toggle is on (it's off by default), each new scammer line is spoken in its filled-in form. Nothing is sent anywhere; it's the browser's own voice.
+- PRD ref: `prd.md > The Drill Screen`.
+
 ### Shared UI (`src/components/`)
 These are used across screens and cover `prd.md > Screens and Layout` and `prd.md > The Drill Screen`:
 - `PhoneFrame`

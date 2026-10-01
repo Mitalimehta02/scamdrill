@@ -177,6 +177,7 @@ button:disabled { cursor: not-allowed; }
 .compose input:focus { outline: none; border-color: var(--navy); }
 .compose button { flex: none; width: var(--tap); height: var(--tap); border-radius: 50%; border: none; background: var(--navy); color: #fff; display: grid; place-items: center; }
 .compose button:disabled { background: #9aa3af; }
+.reply-count { align-self: flex-end; margin: -4px 8px 0 0; font-size: var(--text-xs); color: var(--muted); font-variant-numeric: tabular-nums; }
 
 /* ---------- Fake OTP SMS (stage 5) ---------- */
 .chat-wrap { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
