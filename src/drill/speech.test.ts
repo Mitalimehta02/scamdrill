@@ -8,10 +8,10 @@ const voices = [
 ];
 
 describe("pickVoice", () => {
-  it("uses Indian English for English, and a Hindi voice for Hindi and Hinglish", () => {
+  it("uses a Hindi voice for Hindi only, and Indian English for English and Roman-script Hinglish", () => {
     expect(pickVoice(voices, "en")?.name).toBe("Ravi");
     expect(pickVoice(voices, "hi")?.name).toBe("Kalpana");
-    expect(pickVoice(voices, "hinglish")?.name).toBe("Kalpana");
+    expect(pickVoice(voices, "hinglish")?.name).toBe("Ravi");
   });
 
   it("accepts underscore or lower-case language tags (some browsers report hi_IN)", () => {

@@ -64,8 +64,8 @@ export interface Strings {
     replyWaiting: string;
     send: string;
     offline: string;
-    /** Three tappable replies. No digits, ever, so they can never trip the safety guard. */
-    quickReplies: (contact: string) => [string, string, string];
+    /** Two tappable replies, one row. No digits, ever, so they can never trip the safety guard. */
+    quickReplies: (contact: string) => [string, string];
     readAloudOn: string;
     readAloudOff: string;
   };
@@ -152,7 +152,7 @@ const en: Strings = {
     replyWaiting: "Inspector Sharma is typing…",
     send: "Send",
     offline: "Running in offline practice mode",
-    quickReplies: (c) => ["Who is this?", "I don't understand.", `Let me ask ${c} first.`],
+    quickReplies: (c) => ["Who is this?", `Let me ask ${c} first.`],
     readAloudOn: "Stop reading aloud",
     readAloudOff: "Read messages aloud",
   },
@@ -294,7 +294,7 @@ const hi: Strings = {
     replyWaiting: "इंस्पेक्टर शर्मा टाइप कर रहे हैं…",
     send: "भेजें",
     offline: "ऑफ़लाइन प्रैक्टिस मोड चल रहा है",
-    quickReplies: (c) => ["आप कौन हैं?", "मुझे समझ नहीं आ रहा।", `पहले ${c} से पूछना है।`],
+    quickReplies: (c) => ["आप कौन हैं?", `पहले ${c} से पूछना है।`],
     readAloudOn: "पढ़कर सुनाना बंद करें",
     readAloudOff: "संदेश पढ़कर सुनाएँ",
   },
@@ -436,7 +436,7 @@ const hinglish: Strings = {
     replyWaiting: "Inspector Sharma type kar rahe hain…",
     send: "Bhejein",
     offline: "Offline practice mode chal raha hai",
-    quickReplies: (c) => ["Aap kaun hain?", "Mujhe samajh nahi aa raha.", `Pehle ${c} se poochna hai.`],
+    quickReplies: (c) => ["Aap kaun hain?", `Pehle ${c} se poochna hai.`],
     readAloudOn: "Padh kar sunana band karein",
     readAloudOff: "Messages padh kar sunaiye",
   },

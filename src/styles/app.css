@@ -176,9 +176,9 @@ button:disabled { cursor: not-allowed; }
 .exit-call { background: var(--green); }
 .exit:hover { filter: brightness(1.08); }
 
-/* Quick replies: big pills that wrap onto a second line, so none is hidden off-screen. */
-.quick-replies { display: flex; flex-wrap: wrap; gap: 6px 8px; }
-.quick-reply { flex: none; min-height: 44px; padding: 0 14px; border-radius: 24px; border: 1.5px solid var(--navy); background: var(--surface); color: var(--navy); font-weight: 600; font-size: var(--text-sm); white-space: nowrap; }
+/* Quick replies: two big pills sharing one row; a long name wraps inside its pill, never onto a new row. */
+.quick-replies { display: flex; gap: 8px; }
+.quick-reply { flex: 1 1 0; min-width: 0; min-height: 44px; padding: 4px 12px; border-radius: 22px; border: 1.5px solid var(--navy); background: var(--surface); color: var(--navy); font-weight: 600; font-size: var(--text-sm); line-height: 1.2; }
 .quick-reply:hover:not(:disabled) { background: rgba(27, 42, 65, 0.06); }
 .quick-reply:disabled { opacity: 0.45; }
 .compose { display: flex; gap: 8px; }

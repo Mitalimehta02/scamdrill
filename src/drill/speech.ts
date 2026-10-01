@@ -6,9 +6,9 @@ import type { Lang } from "../i18n/strings";
 
 type VoiceLike = Pick<SpeechSynthesisVoice, "lang" | "name">;
 
-/** Hindi voice for Hindi and Hinglish, Indian English for English. Null if the device has none. */
+/** Hindi voice for Hindi (Devanagari); Indian English for English and Hinglish (Roman script). Null if the device has none. */
 export function pickVoice<V extends VoiceLike>(voices: V[], lang: Lang): V | null {
-  const wanted = lang === "en" ? "en-in" : "hi-in";
+  const wanted = lang === "hi" ? "hi-in" : "en-in";
   const norm = (l: string) => l.replace("_", "-").toLowerCase();
   return voices.find((v) => norm(v.lang) === wanted) ?? null;
 }

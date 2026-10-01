@@ -18,7 +18,7 @@ describe("quick replies", () => {
     });
 
     it(`${lang}: the safe contact's name is replaced before anything is sent`, () => {
-      const prepared = prepareReply(replies[2], ctx(3));
+      const prepared = prepareReply(replies[1], ctx(3));
       expect(prepared.kind).toBe("reply");
       if (prepared.kind === "reply") {
         expect(prepared.text).toContain("{SAFE_CONTACT}");

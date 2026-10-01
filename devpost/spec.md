@@ -230,12 +230,12 @@ Implements `prd.md > Look and Feel`. The CSS variables go in `src/styles/tokens.
 
 ### Quick Replies and Reply Limit (`src/components/QuickReplies.tsx`)
 Added after the judge review.
-- `STRINGS[lang].drill.quickReplies(contactName)` gives 3 replies. `DrillScreen.sendText(text)` is the single path used for both typed and tapped replies: `checkReply` → `toPlaceholders` → `PARENT_REPLY`.
+- `STRINGS[lang].drill.quickReplies(contactName)` gives 2 replies, in one row. `DrillScreen.sendText(text)` is the single path used for both typed and tapped replies: `checkReply` → `toPlaceholders` → `PARENT_REPLY`.
 - The reply input has `maxLength={MAX_REPLY_CHARS}` (300) and shows a counter from 240 characters. The server's per-message limit is 600, so a maximum-length reply never makes the history invalid.
 - PRD ref: `prd.md > The Drill Screen`.
 
 ### Read-Aloud (`src/drill/speech.ts`, optional)
-- `pickVoice(lang)` uses `speechSynthesis.getVoices()` and prefers `hi-IN` for Hindi and Hinglish and `en-IN` for English. It returns null when there's no match, and the header toggle is then hidden.
+- `pickVoice(lang)` uses `speechSynthesis.getVoices()` and uses `hi-IN` for Hindi and `en-IN` for English and Hinglish (Roman script). It returns null when there's no match, and the header toggle is then hidden.
 - When the toggle is on (it's off by default), each new scammer line is spoken in its filled-in form. Nothing is sent anywhere; it's the browser's own voice.
 - PRD ref: `prd.md > The Drill Screen`.
 
