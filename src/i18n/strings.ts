@@ -66,6 +66,8 @@ export interface Strings {
     offline: string;
     /** Three tappable replies. No digits, ever, so they can never trip the safety guard. */
     quickReplies: (contact: string) => [string, string, string];
+    readAloudOn: string;
+    readAloudOff: string;
   };
   otp: { now: string; body: string; pill: string };
   pay: { title: string; account: string; amount: string; pay: (amount: string) => string; fine: string };
@@ -151,6 +153,8 @@ const en: Strings = {
     send: "Send",
     offline: "Running in offline practice mode",
     quickReplies: (c) => ["Who is this?", "I don't understand.", `Let me ask ${c} first.`],
+    readAloudOn: "Stop reading aloud",
+    readAloudOff: "Read messages aloud",
   },
   otp: { now: "now", body: "is your OTP for account verification. Do not share it with anyone.", pill: `New message · ${OTP_SENDER}` },
   pay: {
@@ -291,6 +295,8 @@ const hi: Strings = {
     send: "भेजें",
     offline: "ऑफ़लाइन प्रैक्टिस मोड चल रहा है",
     quickReplies: (c) => ["आप कौन हैं?", "मुझे समझ नहीं आ रहा।", `पहले ${c} से पूछना है।`],
+    readAloudOn: "पढ़कर सुनाना बंद करें",
+    readAloudOff: "संदेश पढ़कर सुनाएँ",
   },
   otp: { now: "अभी", body: "आपके खाते के वेरिफ़िकेशन का OTP है। इसे किसी के साथ साझा न करें।", pill: `नया संदेश · ${OTP_SENDER}` },
   pay: {
@@ -431,6 +437,8 @@ const hinglish: Strings = {
     send: "Bhejein",
     offline: "Offline practice mode chal raha hai",
     quickReplies: (c) => ["Aap kaun hain?", "Mujhe samajh nahi aa raha.", `Pehle ${c} se poochna hai.`],
+    readAloudOn: "Padh kar sunana band karein",
+    readAloudOff: "Messages padh kar sunaiye",
   },
   otp: { now: "abhi", body: "aapke account verification ka OTP hai. Ise kisi ke saath share na karein.", pill: `Naya message · ${OTP_SENDER}` },
   pay: {

@@ -15,6 +15,7 @@ import { classify, getScammerLine } from "../drill/api";
 import { MAX_REPLY_CHARS, REPLY_COUNTER_FROM } from "../drill/limits";
 import { fill } from "../drill/placeholders";
 import { prepareReply } from "../drill/reply";
+import { speak, stopSpeaking, useVoice } from "../drill/speech";
 import { QuickReplies } from "../components/QuickReplies";
 import { apiHistory, type DrillAction, type DrillState } from "../drill/reducer";
 import { STAGES } from "../drill/script";
@@ -38,6 +39,9 @@ export function DrillScreen({
   const t = useT().drill;
   const language = setup.language;
   const [draft, setDraft] = useState("");
+  // Read-aloud: off by default, and only offered when the device has a suitable voice.
+  const voice = useVoice(language);
+  const [readAloud, setReadAloud] = useState(false);
   const chatRef = useRef<HTMLDivElement>(null);
 
   // Whenever it's the scammer's turn: get a line (AI or canned), show it, then tag it.
@@ -83,6 +87,17 @@ export function DrillScreen({
     chat.scrollTo({ top: Math.min(bottom, top), behavior: "smooth" });
   }, [messageCount, lastTagged, drill.awaiting]);
 
+  // Speak each new line from Sharma (never the Pay card) in its filled-in form.
+  const lastMessage = drill.messages[drill.messages.length - 1];
+  useEffect(() => {
+    if (readAloud && voice && lastMessage?.role === "scammer" && lastMessage.kind !== "pay") speak(fill(lastMessage.text, setup), voice);
+    // Only a new message should trigger speech.
+  }, [lastMessage?.id]);
+  useEffect(() => {
+    if (!readAloud || drill.ending) stopSpeaking();
+  }, [readAloud, drill.ending]);
+  useEffect(() => () => stopSpeaking(), []);
+
   const canReply = drill.awaiting === "parent" && !drill.ending;
   const typing = drill.awaiting === "scammer" && !drill.ending;
 
@@ -119,7 +134,28 @@ export function DrillScreen({
           </div>
           <CallTimer startedAt={drill.startedAt} endedAt={drill.endedAt} />
         </div>
-        <PressureMeter value={drill.pressure} />
+        <div className="meter-row">
+          <PressureMeter value={drill.pressure} />
+          {voice && (
+            <button
+              type="button"
+              className={`speak-toggle${readAloud ? " on" : ""}`}
+              aria-pressed={readAloud}
+              aria-label={readAloud ? t.readAloudOn : t.readAloudOff}
+              title={readAloud ? t.readAloudOn : t.readAloudOff}
+              onClick={() => setReadAloud((on) => !on)}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3z" />
+                {readAloud ? (
+                  <path fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" />
+                ) : (
+                  <path fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" d="M16 9l5 6M21 9l-5 6" />
+                )}
+              </svg>
+            </button>
+          )}
+        </div>
       </header>
 
       <div className="chat-wrap">
