@@ -12,9 +12,10 @@ import { PayCard } from "../components/PayCard";
 import { PressureMeter } from "../components/PressureMeter";
 import { TypingIndicator } from "../components/TypingIndicator";
 import { classify, getScammerLine } from "../drill/api";
-import { checkReply } from "../drill/guard";
 import { MAX_REPLY_CHARS, REPLY_COUNTER_FROM } from "../drill/limits";
-import { fill, toPlaceholders } from "../drill/placeholders";
+import { fill } from "../drill/placeholders";
+import { prepareReply } from "../drill/reply";
+import { QuickReplies } from "../components/QuickReplies";
 import { apiHistory, type DrillAction, type DrillState } from "../drill/reducer";
 import { STAGES } from "../drill/script";
 import { safeContactLabel, type FamilySetup } from "../drill/setup";
@@ -85,19 +86,24 @@ export function DrillScreen({
   const canReply = drill.awaiting === "parent" && !drill.ending;
   const typing = drill.awaiting === "scammer" && !drill.ending;
 
-  function send(e: React.FormEvent) {
-    e.preventDefault();
-    const text = draft.trim();
-    if (!text || !canReply) return;
-    // The safety guard runs first. A match ends the drill, and the text is never stored or sent.
-    const verdict = checkReply(text, { fakeOtp: drill.fakeOtp, stage: drill.stage });
+  // Typed and tapped replies take the same path: safety guard → placeholders → reducer.
+  function sendText(raw: string) {
+    if (!canReply) return;
+    const prepared = prepareReply(raw, { fakeOtp: drill.fakeOtp, stage: drill.stage, setup });
+    if (prepared.kind === "empty") return;
     setDraft("");
-    if (verdict !== "ok") {
-      dispatch({ type: "GUARD_LOSS", kind: verdict, now: Date.now() });
+    if (prepared.kind === "loss") {
+      // A match ends the drill, and the text is never stored or sent.
+      dispatch({ type: "GUARD_LOSS", kind: prepared.verdict, now: Date.now() });
       return;
     }
     // Real names never leave the browser: "Is Rahul safe?" is stored and sent as "Is {SAFE_CONTACT} safe?".
-    dispatch({ type: "PARENT_REPLY", id: nextId++, text: toPlaceholders(text, setup), now: Date.now() });
+    dispatch({ type: "PARENT_REPLY", id: nextId++, text: prepared.text, now: Date.now() });
+  }
+
+  function send(e: React.FormEvent) {
+    e.preventDefault();
+    sendText(draft);
   }
 
   const exit = (reason: "hangup" | "call" | "pay") => dispatch({ type: "EXIT", reason, now: Date.now() });
@@ -136,6 +142,8 @@ export function DrillScreen({
 
       <footer className="drill-footer">
         <ExitButtons contactLabel={safeContactLabel(setup)} onHangUp={() => exit("hangup")} onCall={() => exit("call")} />
+        {/* Hidden while typing, so the chat keeps its space; they come back when the box is empty. */}
+        {!draft && <QuickReplies contactName={setup.safeContactName.trim()} disabled={!canReply} onPick={sendText} />}
         <form className="compose" onSubmit={send}>
           <label htmlFor="reply" className="sr-only">
             {t.reply}
