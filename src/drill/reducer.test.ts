@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { apiHistory, drillReducer, initialDrill, type DrillAction, type DrillState } from "./reducer";
+import { apiHistory, drillReducer, initialDrill, lastScammerLine, type DrillAction, type DrillState } from "./reducer";
 import { STAGE_COUNT } from "./script";
 import { TACTICS } from "./tactics";
 
@@ -130,6 +130,16 @@ describe("silence nudge", () => {
     s = drillReducer(s, { type: "PARENT_REPLY", id: 3, text: "yes?", now: 0 });
     s = drillReducer(s, { type: "SCAMMER_MESSAGE", id: 4, text: "y", aiFailed: false, now: 0 });
     expect(drillReducer(s, { type: "NUDGE_DUE" }).pendingNudge).toBe(true);
+  });
+});
+
+describe("lastScammerLine (which chip stays expanded)", () => {
+  it("is the newest thing Sharma said, never the Pay card or a parent reply", () => {
+    const s = toStage(8);
+    const newest = lastScammerLine(s.messages);
+    expect(newest?.role).toBe("scammer");
+    expect(newest?.kind).toBeUndefined();
+    expect(newest?.id).toBe(7);
   });
 });
 

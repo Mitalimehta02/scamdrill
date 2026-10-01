@@ -17,7 +17,7 @@ import { fill } from "../drill/placeholders";
 import { prepareReply } from "../drill/reply";
 import { speak, stopSpeaking, useVoice } from "../drill/speech";
 import { QuickReplies } from "../components/QuickReplies";
-import { apiHistory, type DrillAction, type DrillState } from "../drill/reducer";
+import { apiHistory, lastScammerLine, type DrillAction, type DrillState } from "../drill/reducer";
 import { STAGES } from "../drill/script";
 import { safeContactLabel, type FamilySetup } from "../drill/setup";
 import { useT } from "../i18n/useT";
@@ -98,6 +98,9 @@ export function DrillScreen({
   }, [readAloud, drill.ending]);
   useEffect(() => () => stopSpeaking(), []);
 
+  // Only the newest chip shows its explanation; older ones collapse to a one-line pill (tap to expand).
+  const newestLineId = lastScammerLine(drill.messages)?.id;
+
   const canReply = drill.awaiting === "parent" && !drill.ending;
   const typing = drill.awaiting === "scammer" && !drill.ending;
 
@@ -168,7 +171,14 @@ export function DrillScreen({
             m.kind === "pay" ? (
               <PayCard key={m.id} disabled={!!drill.ending} onPay={() => exit("pay")} />
             ) : (
-              <ChatBubble key={m.id} role={m.role} text={fill(m.text, setup)} at={m.at} tactic={m.tactic} />
+              <ChatBubble
+                key={m.id}
+                role={m.role}
+                text={fill(m.text, setup)}
+                at={m.at}
+                tactic={m.tactic}
+                chipCollapsed={m.id !== newestLineId}
+              />
             ),
           )}
           {typing && <TypingIndicator />}

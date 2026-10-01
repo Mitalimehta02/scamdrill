@@ -112,7 +112,7 @@ button:disabled { cursor: not-allowed; }
 .caller-sub.typing-text { opacity: 1; color: #f7d08a; font-style: italic; }
 .meter-row { display: flex; align-items: center; gap: 10px; margin-top: 7px; }
 .meter-row .meter { flex: 1; margin-top: 0; }
-.speak-toggle { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.25); background: transparent; color: rgba(255, 255, 255, 0.75); display: grid; place-items: center; }
+.speak-toggle { flex: none; width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.25); background: transparent; color: rgba(255, 255, 255, 0.75); display: grid; place-items: center; }
 .speak-toggle.on { background: #f0a93a; border-color: #f0a93a; color: var(--navy); }
 .call-timer { flex: none; display: flex; align-items: center; gap: 5px; font-size: var(--text-xs); font-variant-numeric: tabular-nums; background: rgba(255, 255, 255, 0.1); padding: 2px 9px; border-radius: 99px; }
 .call-dot { width: 7px; height: 7px; border-radius: 50%; background: #ef5a45; animation: pulse 1.6s infinite; }
@@ -129,11 +129,11 @@ button:disabled { cursor: not-allowed; }
 .meter-mid .meter-fill { background-color: #f0a93a; }
 .meter-high .meter-fill { background-color: #ef5a45; }
 
-.chat { position: relative; flex: 1; overflow-y: auto; background: var(--chat-bg); padding: 12px 12px 8px; display: flex; flex-direction: column; gap: 10px; }
+.chat { position: relative; flex: 1; overflow-y: auto; background: var(--chat-bg); padding: 8px 12px 6px; display: flex; flex-direction: column; gap: 8px; }
 .msg { display: flex; flex-direction: column; max-width: 84%; }
 .msg.scammer { align-self: flex-start; }
 .msg.parent { align-self: flex-end; align-items: flex-end; }
-.bubble { padding: 11px 14px; border-radius: 18px; font-size: var(--text); line-height: 1.45; overflow-wrap: anywhere; }
+.bubble { padding: 9px 13px; border-radius: 18px; font-size: var(--text); line-height: 1.45; overflow-wrap: anywhere; }
 .msg.scammer .bubble { background: var(--surface); border: 1px solid var(--line); border-bottom-left-radius: 6px; }
 /* Timestamp tucks into the last line when there's room, like messaging apps. */
 .bubble .time { float: right; font-size: var(--text-xs); line-height: 1.2; margin: 9px 0 -3px 10px; color: var(--muted); }
@@ -148,7 +148,7 @@ button:disabled { cursor: not-allowed; }
 .msg.parent .bubble { background: var(--navy); color: #fff; border-bottom-right-radius: 6px; }
 
 .chip {
-  margin-top: 6px;
+  margin-top: 4px;
   background: var(--amber-soft);
   border: 1px solid var(--amber-line);
   border-radius: 12px;
@@ -157,6 +157,11 @@ button:disabled { cursor: not-allowed; }
 }
 .chip-name { display: flex; align-items: center; gap: 6px; font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.05em; color: var(--amber-ink); }
 .chip-text { font-size: var(--text-sm); line-height: 1.4; color: var(--ink); }
+/* Older chips: a one-line pill with just the tactic name; tap to show the explanation again. */
+.chip-button { display: block; text-align: left; font: inherit; color: inherit; cursor: pointer; width: 100%; }
+.chip-button.collapsed { width: auto; align-self: flex-start; display: inline-flex; padding: 6px 12px; border-radius: 99px; animation: none; }
+.chip-button .chip-name { display: flex; }
+.chip-button .chip-text { display: block; margin-top: 2px; }
 @keyframes chip-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 
 .typing { align-self: flex-start; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; border-bottom-left-radius: 6px; padding: 14px 16px; display: flex; gap: 5px; }
@@ -169,7 +174,7 @@ button:disabled { cursor: not-allowed; }
 .demo-note { flex: none; text-align: center; font-size: var(--text-xs); color: var(--muted); background: var(--surface); border-bottom: 1px solid var(--line); padding: 2px 12px; }
 .offline-note { align-self: center; font-size: var(--text-xs); color: var(--muted); background: var(--surface); border: 1px solid var(--line); border-radius: 99px; padding: 4px 12px; }
 
-.drill-footer { flex: none; background: var(--bg); border-top: 1px solid var(--line); padding: 8px 12px 10px; display: flex; flex-direction: column; gap: 8px; }
+.drill-footer { flex: none; background: var(--bg); border-top: 1px solid var(--line); padding: 8px 12px 8px; display: flex; flex-direction: column; gap: 6px; }
 .exits { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .exit { min-height: 56px; border: none; border-radius: 16px; color: #fff; font-weight: 700; font-size: var(--text); display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0 8px; line-height: 1.2; }
 .exit-hangup { background: var(--red); }
